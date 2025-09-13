@@ -1,0 +1,323 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nearby Location Sorter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overscroll-behavior: none;
+        }
+
+        #map {
+            min-height: 400px;
+        }
+        /* Custom scrollbar for better aesthetics */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="flex flex-col md:flex-row h-screen max-h-screen">
+        <!-- Sidebar for Controls -->
+        <div class="w-full md:w-1/3 lg:w-1/4 p-4 bg-white shadow-lg flex flex-col max-h-screen">
+            <div class="flex-shrink-0">
+                <div class="flex items-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    <h1 class="text-2xl font-bold ml-3">Location Sorter</h1>
+                </div>
+
+                <div id="status" class="p-3 bg-blue-100 text-blue-800 rounded-md text-center">
+                    <p id="status-text">Getting your location...</p>
+                </div>
+                <h2 class="text-lg font-semibold my-3">Select Destinations:</h2>
+            </div>
+
+            <!-- Location Checkbox List -->
+            <div id="location-list" class="flex-grow overflow-y-auto custom-scrollbar pr-2">
+                <!-- Checkboxes will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Map Area -->
+        <div class="flex-1 h-full">
+            <div id="map" class="w-full h-full"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA ---
+        // A list of 20+ locations in India
+        const locations = [
+            { name: "Marine Drive, Mumbai", lat: 18.9432, lng: 72.8243 },
+            { name: "Gateway of India, Mumbai", lat: 18.9220, lng: 72.8347 },
+            { name: "Juhu Beach, Mumbai", lat: 19.1065, lng: 72.8265 },
+            { name: "Shree Siddhivinayak, Mumbai", lat: 19.0170, lng: 72.8302 },
+            { name: "Elephanta Caves, Mumbai", lat: 18.9633, lng: 72.9315 },
+            { name: "Shaniwar Wada, Pune", lat: 18.5196, lng: 73.8554 },
+            { name: "Aga Khan Palace, Pune", lat: 18.5520, lng: 73.9030 },
+            { name: "Trimbakeshwar Shiva Temple, Nashik", lat: 19.9348, lng: 73.5338 },
+            { name: "India Gate, New Delhi", lat: 28.6129, lng: 77.2295 },
+            { name: "Taj Mahal, Agra", lat: 27.1751, lng: 78.0421 },
+            { name: "Hawa Mahal, Jaipur", lat: 26.9239, lng: 75.8267 },
+            { name: "Golden Temple, Amritsar", lat: 31.6200, lng: 74.8765 },
+            { name: "Charminar, Hyderabad", lat: 17.3616, lng: 78.4747 },
+            { name: "Mysore Palace, Mysuru", lat: 12.3052, lng: 76.6552 },
+            { name: "Lalbagh Botanical Garden, Bengaluru", lat: 12.9507, lng: 77.5848 },
+            { name: "Marina Beach, Chennai", lat: 13.0480, lng: 80.2825 },
+            { name: "Victoria Memorial, Kolkata", lat: 22.5448, lng: 88.3426 },
+            { name: "Sun Temple, Konark", lat: 19.8876, lng: 86.0945 },
+            { name: "Varanasi Ghats, Varanasi", lat: 25.3076, lng: 83.0100 },
+            { name: "Calangute Beach, Goa", lat: 15.5485, lng: 73.7609 },
+            { name: "Rishikesh, Uttarakhand", lat: 30.0869, lng: 78.2676 },
+            { name: "Dal Lake, Srinagar", lat: 34.1030, lng: 74.8540 }
+        ];
+
+        // --- GLOBAL VARIABLES ---
+        let map;
+        let userLocation = null;
+        let markers = [];
+        let directionsService;
+        let directionsRenderer;
+        const GOOGLE_MAPS_API_KEY = 'AIzaSyBBfulQNrZqVY4kj1CCsWoS13SksshKPZM';
+
+        // --- INITIALIZATION ---
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 20.5937, lng: 78.9629 }, // Default center on India
+                zoom: 5,
+                mapTypeControl: false,
+                streetViewControl: false,
+            });
+
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer({
+                map: map,
+                suppressMarkers: true // We use custom markers, so suppress the default ones.
+            });
+
+            populateLocationList();
+            getUserLocation();
+        }
+
+        function populateLocationList() {
+            const listContainer = document.getElementById('location-list');
+            locations.forEach((location, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'flex items-center p-2 rounded-md hover:bg-gray-100 transition-colors';
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `loc-${index}`;
+                checkbox.value = index;
+                checkbox.className = 'h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 disabled:opacity-50';
+                checkbox.disabled = true; // Disabled until user location is fetched
+                checkbox.addEventListener('change', updateMapAndList);
+
+                const label = document.createElement('label');
+                label.htmlFor = `loc-${index}`;
+                label.textContent = location.name;
+                label.className = 'ml-3 text-sm text-gray-700';
+
+                itemDiv.appendChild(checkbox);
+                itemDiv.appendChild(label);
+                listContainer.appendChild(itemDiv);
+            });
+        }
+
+        // --- CORE LOGIC ---
+        function getUserLocation() {
+            const statusText = document.getElementById('status-text');
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        userLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        statusText.parentElement.classList.replace('bg-blue-100', 'bg-green-100');
+                        statusText.parentElement.classList.replace('text-blue-800', 'text-green-800');
+                        statusText.textContent = "Location found! Select destinations.";
+
+                        // Enable checkboxes now that we have the location
+                        document.querySelectorAll('#location-list input[type="checkbox"]').forEach(cb => cb.disabled = false);
+                    },
+                    () => {
+                        handleLocationError(true);
+                    }
+                );
+            } else {
+                handleLocationError(false);
+            }
+        }
+
+        function updateMapAndList() {
+            if (!userLocation) {
+                // This case is handled by disabling checkboxes, but as a fallback.
+                console.error("User location is not available to sort locations.");
+                return;
+            }
+
+            const selectedIndices = Array.from(document.querySelectorAll('#location-list input:checked')).map(cb => cb.value);
+
+            if (selectedIndices.length === 0) {
+                clearMarkers();
+                if(directionsRenderer) {
+                    directionsRenderer.setDirections({ routes: [] }); // Clear old routes
+                }
+                return;
+            }
+
+            let selectedLocations = selectedIndices.map(index => locations[index]);
+
+            // Calculate distance for each and sort
+            selectedLocations.forEach(location => {
+                location.distance = getDistance(userLocation, location);
+            });
+
+            selectedLocations.sort((a, b) => a.distance - b.distance);
+
+            displaySortedLocationsOnMap(selectedLocations);
+        }
+
+        function displaySortedLocationsOnMap(sortedLocations) {
+            clearMarkers();
+            directionsRenderer.setDirections({ routes: [] }); // Clear previous route before drawing a new one
+
+            const bounds = new google.maps.LatLngBounds();
+
+            // Add a marker for the user's location
+            const userMarker = new google.maps.Marker({
+                position: userLocation,
+                map: map,
+                title: 'Your Location',
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 8,
+                    fillColor: "#4285F4",
+                    fillOpacity: 1,
+                    strokeColor: "white",
+                    strokeWeight: 2,
+                }
+            });
+            markers.push(userMarker);
+            bounds.extend(userLocation);
+
+            // Add numbered markers for selected destinations
+            sortedLocations.forEach((location, index) => {
+                const marker = new google.maps.Marker({
+                    position: { lat: location.lat, lng: location.lng },
+                    map: map,
+                    label: `${index + 1}`, // Numbered marker
+                    title: `${index + 1}. ${location.name} (${location.distance.toFixed(2)} km away)`
+                });
+
+                const infowindow = new google.maps.InfoWindow({
+                    content: `<div><strong>${index + 1}. ${location.name}</strong><br>${location.distance.toFixed(2)} km away</div>`
+                });
+
+                marker.addListener("click", () => {
+                    infowindow.open({
+                        anchor: marker,
+                        map,
+                    });
+                });
+
+                markers.push(marker);
+                bounds.extend(marker.getPosition());
+            });
+
+            // Pan map to fit all markers
+            map.fitBounds(bounds);
+
+            // Now, calculate and display the route
+            if (sortedLocations.length > 0) {
+                const origin = new google.maps.LatLng(userLocation.lat, userLocation.lng);
+                const destination = new google.maps.LatLng(sortedLocations[sortedLocations.length - 1].lat, sortedLocations[sortedLocations.length - 1].lng);
+
+                const waypoints = sortedLocations.slice(0, -1).map(location => ({
+                    location: new google.maps.LatLng(location.lat, location.lng),
+                    stopover: true
+                }));
+
+                const request = {
+                    origin: origin,
+                    destination: destination,
+                    waypoints: waypoints,
+                    travelMode: google.maps.TravelMode.DRIVING
+                };
+
+                directionsService.route(request, (result, status) => {
+                    if (status == 'OK') {
+                        directionsRenderer.setDirections(result);
+                    } else {
+                        handleDirectionsError(status);
+                        console.error('Directions request failed due to ' + status);
+                    }
+                });
+            }
+        }
+
+        // --- UTILITY FUNCTIONS ---
+        function clearMarkers() {
+            for (let i = 0; i < markers.length; i++) {
+                markers[i].setMap(null);
+            }
+            markers = [];
+        }
+
+        function handleLocationError(browserHasGeolocation) {
+            const statusText = document.getElementById('status-text');
+             statusText.parentElement.classList.replace('bg-blue-100', 'bg-red-100');
+             statusText.parentElement.classList.replace('text-blue-800', 'text-red-800');
+            statusText.textContent = browserHasGeolocation
+                ? 'Geolocation service failed. Please enable location permissions.'
+                : 'Your browser doesn\'t support geolocation.';
+        }
+
+        function handleDirectionsError(status) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.classList.remove('bg-blue-100', 'bg-green-100');
+            statusDiv.classList.add('bg-red-100');
+            statusDiv.querySelector('p').textContent = `Route display failed: ${status}. Please try a different selection.`;
+        }
+
+        // Haversine formula to calculate distance between two lat/lng points in km
+        function getDistance(pos1, pos2) {
+            const R = 6371; // Radius of the Earth in km
+            const dLat = (pos2.lat - pos1.lat) * Math.PI / 180;
+            const dLon = (pos2.lng - pos1.lng) * Math.PI / 180;
+            const a =
+                0.5 - Math.cos(dLat)/2 +
+                Math.cos(pos1.lat * Math.PI / 180) * Math.cos(pos2.lat * Math.PI / 180) * (1 - Math.cos(dLon))/2;
+            return R * 2 * Math.asin(Math.sqrt(a));
+        }
+
+        window.initMap = initMap;
+    </script>
+    <!-- Async script loading for Google Maps API -->
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBfulQNrZqVY4kj1CCsWoS13SksshKPZM&callback=initMap">
+    </script>
+</body>
+</html>
+
+
