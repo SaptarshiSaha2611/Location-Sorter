@@ -44,6 +44,11 @@
                 <div id="status" class="p-3 bg-blue-100 text-blue-800 rounded-md text-center">
                     <p id="status-text">Getting your location...</p>
                 </div>
+                <div id="navigation-container" class="mt-4 hidden">
+                    <button id="start-navigation-btn" class="w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors shadow-md">
+                        Start Navigation in Google Maps
+                    </button>
+                </div>
                 <h2 class="text-lg font-semibold my-3">Select Destinations:</h2>
             </div>
             
@@ -179,6 +184,7 @@
                 if(directionsRenderer) {
                     directionsRenderer.setDirections({ routes: [] }); // Clear old routes
                 }
+                document.getElementById('navigation-container').classList.add('hidden'); // Hide button
                 return;
             }
 
@@ -192,6 +198,7 @@
             selectedLocations.sort((a, b) => a.distance - b.distance);
             
             displaySortedLocationsOnMap(selectedLocations);
+            setupNavigationButton(selectedLocations); // Set up the navigation button
         }
 
         function displaySortedLocationsOnMap(sortedLocations) {
@@ -272,6 +279,43 @@
             }
         }
 
+        // --- New Function to Handle Navigation Button ---
+        function setupNavigationButton(sortedLocations) {
+            const navContainer = document.getElementById('navigation-container');
+            const navButton = document.getElementById('start-navigation-btn');
+
+            if (!userLocation || sortedLocations.length === 0) {
+                navContainer.classList.add('hidden');
+                return;
+            }
+
+            // Construct the Google Maps URL
+            // Base URL for directions
+            let mapsUrl = `https://www.google.com/maps/dir/?api=1`;
+            
+            // Add origin (user's location)
+            mapsUrl += `&origin=${userLocation.lat},${userLocation.lng}`;
+            
+            // The last location in the sorted list is the final destination
+            const destination = sortedLocations[sortedLocations.length - 1];
+            mapsUrl += `&destination=${destination.lat},${destination.lng}`;
+            
+            // All other locations are waypoints
+            if (sortedLocations.length > 1) {
+                const waypoints = sortedLocations.slice(0, -1)
+                    .map(loc => `${loc.lat},${loc.lng}`)
+                    .join('|');
+                mapsUrl += `&waypoints=${waypoints}`;
+            }
+
+            // Set the button's action and make it visible
+            navButton.onclick = () => {
+                window.open(mapsUrl, '_blank');
+            };
+            navContainer.classList.remove('hidden');
+        }
+
+
         // --- UTILITY FUNCTIONS ---
         function clearMarkers() {
             for (let i = 0; i < markers.length; i++) {
@@ -315,4 +359,6 @@
     </script>
 </body>
 </html>
+
+
 
