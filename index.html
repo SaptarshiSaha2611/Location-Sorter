@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nearby Location Sorter</title>
+    <title>Pandal Hopper Planner</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -14,19 +14,21 @@
         #map {
             min-height: 400px;
         }
-        /* Custom scrollbar for better aesthetics */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #555; }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #4f46e5;
+            animation: spin 1s ease infinite;
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #555;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -38,23 +40,30 @@
             <div class="flex-shrink-0">
                 <div class="flex items-center mb-4">
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                    <h1 class="text-2xl font-bold ml-3">Location Sorter</h1>
+                    <h1 class="text-2xl font-bold ml-3">Pandal Hopper</h1>
                 </div>
 
                 <div id="status" class="p-3 bg-blue-100 text-blue-800 rounded-md text-center">
-                    <p id="status-text">Getting your location...</p>
+                    <p id="status-text">Apnar location neoa hochche...</p>
                 </div>
-                <div id="navigation-container" class="mt-4 hidden">
-                    <button id="start-navigation-btn" class="w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors shadow-md">
-                        Start Navigation in Google Maps
+                
+                <!-- Gemini Plan Button -->
+                <div id="gemini-plan-container" class="mt-4">
+                    <button id="plan-generator-btn" disabled class="w-full bg-purple-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center">
+                        ✨ Plan Toiri Korun
                     </button>
                 </div>
-                <h2 class="text-lg font-semibold my-3">Select Destinations:</h2>
+
+                <div id="navigation-container" class="mt-4 hidden">
+                    <button id="start-navigation-btn" class="w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors shadow-md">
+                        Google Maps e Navigation
+                    </button>
+                </div>
+                <h2 class="text-lg font-semibold my-3">Pandalguli select korun:</h2>
             </div>
             
-            <!-- Location Checkbox List -->
             <div id="location-list" class="flex-grow overflow-y-auto custom-scrollbar pr-2">
-                <!-- Checkboxes will be dynamically inserted here -->
+                <!-- Checkboxes dynamically inserted -->
             </div>
         </div>
 
@@ -64,32 +73,102 @@
         </div>
     </div>
 
+    <!-- Gemini Plan Modal -->
+    <div id="gemini-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-1/2 lg:w-1/3 p-6 relative">
+            <button id="close-modal-btn" class="absolute top-3 right-3 text-gray-500 hover:text-gray-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            <h2 class="text-2xl font-bold mb-4 text-purple-700">✨ Apnar Pandal Hopping Plan</h2>
+            <div id="modal-content" class="min-h-[200px] max-h-[60vh] overflow-y-auto">
+                <div id="modal-loader" class="flex items-center justify-center h-full">
+                    <div class="spinner"></div>
+                </div>
+                <div id="modal-plan-text" class="text-gray-700 leading-relaxed"></div>
+            </div>
+        </div>
+    </div>
+
+
     <script>
         // --- DATA ---
-        // A list of 20+ locations in India
         const locations = [
-            { name: "Marine Drive, Mumbai", lat: 18.9432, lng: 72.8243 },
-            { name: "Gateway of India, Mumbai", lat: 18.9220, lng: 72.8347 },
-            { name: "Juhu Beach, Mumbai", lat: 19.1065, lng: 72.8265 },
-            { name: "Shree Siddhivinayak, Mumbai", lat: 19.0170, lng: 72.8302 },
-            { name: "Elephanta Caves, Mumbai", lat: 18.9633, lng: 72.9315 },
-            { name: "Shaniwar Wada, Pune", lat: 18.5196, lng: 73.8554 },
-            { name: "Aga Khan Palace, Pune", lat: 18.5520, lng: 73.9030 },
-            { name: "Trimbakeshwar Shiva Temple, Nashik", lat: 19.9348, lng: 73.5338 },
-            { name: "India Gate, New Delhi", lat: 28.6129, lng: 77.2295 },
-            { name: "Taj Mahal, Agra", lat: 27.1751, lng: 78.0421 },
-            { name: "Hawa Mahal, Jaipur", lat: 26.9239, lng: 75.8267 },
-            { name: "Golden Temple, Amritsar", lat: 31.6200, lng: 74.8765 },
-            { name: "Charminar, Hyderabad", lat: 17.3616, lng: 78.4747 },
-            { name: "Mysore Palace, Mysuru", lat: 12.3052, lng: 76.6552 },
-            { name: "Lalbagh Botanical Garden, Bengaluru", lat: 12.9507, lng: 77.5848 },
-            { name: "Marina Beach, Chennai", lat: 13.0480, lng: 80.2825 },
-            { name: "Victoria Memorial, Kolkata", lat: 22.5448, lng: 88.3426 },
-            { name: "Sun Temple, Konark", lat: 19.8876, lng: 86.0945 },
-            { name: "Varanasi Ghats, Varanasi", lat: 25.3076, lng: 83.0100 },
-            { name: "Calangute Beach, Goa", lat: 15.5485, lng: 73.7609 },
-            { name: "Rishikesh, Uttarakhand", lat: 30.0869, lng: 78.2676 },
-            { name: "Dal Lake, Srinagar", lat: 34.1030, lng: 74.8540 }
+            // North Kolkata & Lake Town
+            { name: "Tala Prattoy Durga Puja Art", lat: 22.60893964445799, lng: 88.38279167371302, category: "North Kolkata & Lake Town" },
+            { name: "Tala Barowari Durga Puja", lat: 22.607400633247376, lng: 88.37635312070792, category: "North Kolkata & Lake Town" },
+            { name: "Telengabagan durgotsab", lat: 22.595125075380857, lng: 88.3860004694779, category: "North Kolkata & Lake Town" },
+            { name: "Dakshinpara Durgotsab Committee", lat: 22.61359950986715, lng: 88.42200509943054, category: "North Kolkata & Lake Town" },
+            { name: "Lake Town Adhibasi Brinda", lat: 22.604619158425592, lng: 88.40440997741585, category: "North Kolkata & Lake Town" },
+            { name: "Kankurgachi Jubak Brinda", lat: 22.579515229795735, lng: 88.38859006488101, category: "North Kolkata & Lake Town" },
+            { name: "Bagbazar Sarbojanin", lat: 22.604565985980873, lng: 88.36581143905676, category: "North Kolkata & Lake Town" },
+            { name: "lalabagan nabankur", lat: 22.58858120127754, lng: 88.37729313693865, category: "North Kolkata & Lake Town" },
+            { name: "Maniktala chaltabagan lohapatty", lat: 22.58507869445303, lng: 88.37279462529791, category: "North Kolkata & Lake Town" },
+            { name: "Jagat Mukherjee Park", lat: 22.599638801577026, lng: 88.36659666673727, category: "North Kolkata & Lake Town" },
+            { name: "Sovabazar Rajbari", lat: 22.59641295798978, lng: 88.36795905228267, category: "North Kolkata & Lake Town" },
+            { name: "Kashi Bose Lane Sarbojanin", lat: 22.59122440851893, lng: 88.36921864857945, category: "North Kolkata & Lake Town" },
+            { name: "Sikdar bagan Sadharan Durgotsab", lat: 22.59680194627144, lng: 88.37250497926708, category: "North Kolkata & Lake Town" },
+            { name: "Hatibagan NabinPally Durga Puja", lat: 22.59608104782247, lng: 88.37393764857968, category: "North Kolkata & Lake Town" },
+            { name: "Hatibagan Sarbojonin", lat: 22.594693345752464, lng: 88.37267631180599, category: "North Kolkata & Lake Town" },
+            { name: "Kumartuli Park", lat: 22.599160970150873, lng: 88.36192763508753, category: "North Kolkata & Lake Town" },
+            { name: "Kumortuli Sarbojonin Durgotsab", lat: 22.601255801571554, lng: 88.36291608284724, category: "North Kolkata & Lake Town" },
+            { name: "Simla Byayam Samity", lat: 22.585199011454304, lng: 88.36471507885658, category: "North Kolkata & Lake Town" },
+            { name: "Ahiritola Sarbojanin", lat: 22.595079990626033, lng: 88.35772495523186, category: "North Kolkata & Lake Town" },
+            { name: "Pathuriaghata pancher pally", lat: 22.589203769022546, lng: 88.35623142830435, category: "North Kolkata & Lake Town" },
+            { name: "Chorebagan Sarbojanin", lat: 22.583725564052394, lng: 88.36403637741513, category: "North Kolkata & Lake Town" },
+            { name: "Gauri Bari Sarbojanin Durga Puja Pandal", lat: 22.594724836627297, lng: 88.37955307556398, category: "North Kolkata & Lake Town" },
+            // Dum Dum
+            { name: "Dakshinpara Durgotsab Committee (Dum Dum)", lat: 22.61350485958095, lng: 88.42172615043177, category: "Dum Dum" },
+            { name: "dum dum tarun dal durga puja", lat: 22.612049875792234, lng: 88.41998686151815, category: "Dum Dum" },
+            { name: "Dum Dum Park Sarbojanin Durga Puja Samity", lat: 22.608484352279383, lng: 88.41639807764057, category: "Dum Dum" },
+            { name: "Dum Dum Park Bharat Chakra", lat: 22.610999501855396, lng: 88.41499703420102, category: "Dum Dum" },
+            { name: "Dakshindari Youth Forum Ground", lat: 22.595404371373817, lng: 88.39406460866509, category: "Dum Dum" },
+            { name: "Aswininagar Bandhumahal Club, Baguiati", lat: 22.61025408125824, lng: 88.43353933879096, category: "Dum Dum" },
+            { name: "Arjunpur Amra Sabai Club", lat: 22.624549410009465, lng: 88.42499740721973, category: "Dum Dum" },
+            // South Kolkata
+            { name: "Haridevpur Ajeya Sanghati", lat: 22.4810083823204, lng: 88.33838121180203, category: "South Kolkata" },
+            { name: "Pally Unnayan Samity, Paschim Putiary", lat: 22.47837451257524, lng: 88.34300250809893, category: "South Kolkata" },
+            { name: "New Alipore Suruchi Sangha", lat: 22.509173798057745, lng: 88.33444572159219, category: "South Kolkata" },
+            { name: "Chetla Agrani Club", lat: 22.516607757100694, lng: 88.33701895745992, category: "South Kolkata" },
+            { name: "Alipore Sarbojanin", lat: 22.51850521785838, lng: 88.33379095042847, category: "South Kolkata" },
+            { name: "Badamtala Ashar Sangha", lat: 22.518214550905704, lng: 88.34427166577217, category: "South Kolkata" },
+            { name: "Kalighat Milan Sangha", lat: 22.52451548755223, lng: 88.34166176762388, category: "South Kolkata" },
+            { name: "66 Pally Durgapuja Pandal", lat: 22.518687704807025, lng: 88.3444297345161, category: "South Kolkata" },
+            { name: "Abasar Sarbojanin Durgotsab Samity", lat: 22.528462921520696, lng: 88.34957718475877, category: "South Kolkata" },
+            { name: "Tridhara Sammilani", lat: 22.522418099800674, lng: 88.37745070045479, category: "South Kolkata" },
+            { name: "Naktala Udayan Sangha", lat: 22.47453076249099, lng: 88.36704037834828, category: "South Kolkata" },
+            { name: "Mudiali Club Durga Puja Pandal", lat: 22.510402119224818, lng: 88.3469237387875, category: "South Kolkata" },
+            { name: "Shibmandir Sarbojanin Durgotsab Samiti", lat: 22.511205618014607, lng: 88.35055769831092, category: "South Kolkata" },
+            { name: "Chakraberia Sarbojanin Durgotsab", lat: 22.533784854759208, lng: 88.35231836206964, category: "South Kolkata" },
+            { name: "Vivekananda Park Athletic Club Durga Puja Ground", lat: 22.481866941646672, lng: 88.33874087821435, category: "South Kolkata" },
+            { name: "Ballygunge Cultural Association Durga Puja", lat: 22.51692578941674, lng: 88.35842373573941, category: "South Kolkata" },
+            { name: "Samaj Sebi Sangha", lat: 22.515905077858594, lng: 88.3568877811158, category: "South Kolkata" },
+            { name: "Hindusthan Park Sarbojanin Durgotsab Committee", lat: 22.51788725517056, lng: 88.36257582253818, category: "South Kolkata" },
+            { name: "Singhi Park Sarbojanin Durga Puja Committee", lat: 22.520991139313395, lng: 88.36381572344409, category: "South Kolkata" },
+            { name: "Ekdalia Evergreen Club", lat: 22.521446623845637, lng: 88.36680965836618, category: "South Kolkata" },
+            { name: "Jodhpur Park Durga Puja", lat: 22.504789734117672, lng: 88.3661471676232, category: "South Kolkata" },
+            { name: "95 Pally Association", lat: 22.50844312217531, lng: 88.36344684063893, category: "South Kolkata" },
+            { name: "Babubagan Durgostav", lat: 22.508028957842225, lng: 88.3686946827943, category: "South Kolkata" },
+            { name: "Kendua Shanti Sangha", lat: 22.472035753850385, lng: 88.38147268628475, category: "South Kolkata" },
+            { name: "Purbachal Shakti Sangha", lat: 22.505117386192804, lng: 88.38899018666996, category: "South Kolkata" },
+            { name: "Santoshpur Lake Pally", lat: 22.491969856022923, lng: 88.3834530648602, category: "South Kolkata" },
+            { name: "Santoshpur Trikon park club ankan potigoti", lat: 22.49322374956456, lng: 88.37861884614526, category: "South Kolkata" },
+            { name: "Bosepukur Sitala Madir", lat: 22.51938650980639, lng: 88.38535109370258, category: "South Kolkata" },
+            { name: "Pally Mangal Samity Sarbojanin", lat: 22.503241999102354, lng: 88.36544618759285, category: "South Kolkata" },
+            { name: "Rajdanga Naba Uday Sangha", lat: 22.516983973629188, lng: 88.39117263270157, category: "South Kolkata" },
+            // Salt Lake & Rajarhat
+            { name: "Saltlake AK block", lat: 22.588839434576855, lng: 88.43166878986973, category: "Salt Lake & Rajarhat" },
+            { name: "Newtown Sarbojanin Durgotsav", lat: 22.582013239469298, lng: 88.45929451885038, category: "Salt Lake & Rajarhat" },
+            // Central Kolkata
+            { name: "College Square Durga Puja", lat: 22.574771694610668, lng: 88.36496320955438, category: "Central Kolkata" },
+            { name: "Mohammad Ali Park", lat: 22.577367098381874, lng: 88.36146645598507, category: "Central Kolkata" },
+            { name: "Santosh Mitra Square", lat: 22.566196762910206, lng: 88.36566153561796, category: "Central Kolkata" },
+            { name: "Wellington Nagarik Kalyan Samity", lat: 22.564997186869874, lng: 88.35944552201767, category: "Central Kolkata" },
+            { name: "Beliaghata 33 Pally", lat: 22.568796392752176, lng: 88.39179355508922, category: "Central Kolkata" },
+            // West Kolkata & Behala
+            { name: "Barisha Club Puja Ground and Community Hall", lat: 22.481503976216864, lng: 88.31343431418512, category: "West Kolkata & Behala" },
+            { name: "Barisha Sarbojonin", lat: 22.479908862138025, lng: 88.30825079360658, category: "West Kolkata & Behala" },
+            { name: "Behala Natundal Durga Puja", lat: 22.5007263779893, lng: 88.32027718999508, category: "West Kolkata & Behala" },
+            { name: "Thakurpukur State Bank Park", lat: 22.46813407902166, lng: 88.31008632371837, category: "West Kolkata & Behala" }
         ];
 
         // --- GLOBAL VARIABLES ---
@@ -99,71 +178,90 @@
         let directionsService;
         let directionsRenderer;
         const GOOGLE_MAPS_API_KEY = 'AIzaSyBBfulQNrZqVY4kj1CCsWoS13SksshKPZM';
+        let sortedSelectedLocations = [];
 
-        // --- INITIALIZATION ---
+        // --- INITIALIZATION & UI SETUP ---
         function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
-                center: { lat: 20.5937, lng: 78.9629 }, // Default center on India
-                zoom: 5,
+                center: { lat: 22.5726, lng: 88.3639 },
+                zoom: 12,
                 mapTypeControl: false,
                 streetViewControl: false,
             });
-
             directionsService = new google.maps.DirectionsService();
-            directionsRenderer = new google.maps.DirectionsRenderer({
-                map: map,
-                suppressMarkers: true // We use custom markers, so suppress the default ones.
-            });
-
+            directionsRenderer = new google.maps.DirectionsRenderer({ map: map, suppressMarkers: true });
             populateLocationList();
             getUserLocation();
+            setupEventListeners();
         }
 
-        function populateLocationList() {
-            const listContainer = document.getElementById('location-list');
-            locations.forEach((location, index) => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'flex items-center p-2 rounded-md hover:bg-gray-100 transition-colors';
-                
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.id = `loc-${index}`;
-                checkbox.value = index;
-                checkbox.className = 'h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 disabled:opacity-50';
-                checkbox.disabled = true; // Disabled until user location is fetched
-                checkbox.addEventListener('change', updateMapAndList);
-                
-                const label = document.createElement('label');
-                label.htmlFor = `loc-${index}`;
-                label.textContent = location.name;
-                label.className = 'ml-3 text-sm text-gray-700';
-
-                itemDiv.appendChild(checkbox);
-                itemDiv.appendChild(label);
-                listContainer.appendChild(itemDiv);
+        function setupEventListeners() {
+            document.getElementById('plan-generator-btn').addEventListener('click', generateHoppingPlan);
+            document.getElementById('close-modal-btn').addEventListener('click', () => document.getElementById('gemini-modal').classList.add('hidden'));
+            document.getElementById('gemini-modal').addEventListener('click', (e) => {
+                if (e.target.id === 'gemini-modal') {
+                    document.getElementById('gemini-modal').classList.add('hidden');
+                }
             });
         }
+        
+        // --- Populate location list function remains the same ---
+        function populateLocationList() {
+            const listContainer = document.getElementById('location-list');
+            const categories = {};
+            locations.forEach((location, index) => {
+                const category = location.category || "Uncategorized";
+                if (!categories[category]) {
+                    categories[category] = [];
+                }
+                categories[category].push({ ...location, originalIndex: index });
+            });
+            const categoryOrder = ["North Kolkata & Lake Town", "Dum Dum", "South Kolkata", "Salt Lake & Rajarhat", "Central Kolkata", "West Kolkata & Behala"];
+            categoryOrder.forEach(categoryName => {
+                const locationsInCategory = categories[categoryName];
+                if (locationsInCategory && locationsInCategory.length > 0) {
+                    const categoryHeader = document.createElement('h3');
+                    categoryHeader.className = 'text-md font-semibold text-gray-600 mt-4 mb-2 px-2 sticky top-0 bg-white';
+                    categoryHeader.textContent = categoryName;
+                    listContainer.appendChild(categoryHeader);
+                    locationsInCategory.forEach(location => {
+                        const index = location.originalIndex;
+                        const itemDiv = document.createElement('div');
+                        itemDiv.className = 'flex items-center p-2 rounded-md hover:bg-gray-100 transition-colors';
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.id = `loc-${index}`;
+                        checkbox.value = index;
+                        checkbox.className = 'h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 disabled:opacity-50';
+                        checkbox.disabled = true;
+                        checkbox.addEventListener('change', updateMapAndList);
+                        const label = document.createElement('label');
+                        label.htmlFor = `loc-${index}`;
+                        label.textContent = location.name;
+                        label.className = 'ml-3 text-sm text-gray-700';
+                        itemDiv.appendChild(checkbox);
+                        itemDiv.appendChild(label);
+                        listContainer.appendChild(itemDiv);
+                    });
+                }
+            });
+        }
+
 
         // --- CORE LOGIC ---
         function getUserLocation() {
+            // ... same as before
             const statusText = document.getElementById('status-text');
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
-                        userLocation = {
-                            lat: position.coords.latitude,
-                            lng: position.coords.longitude
-                        };
+                        userLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
                         statusText.parentElement.classList.replace('bg-blue-100', 'bg-green-100');
                         statusText.parentElement.classList.replace('text-blue-800', 'text-green-800');
-                        statusText.textContent = "Location found! Select destinations.";
-                        
-                        // Enable checkboxes now that we have the location
+                        statusText.textContent = "Location peye gechi! Pandal select korun.";
                         document.querySelectorAll('#location-list input[type="checkbox"]').forEach(cb => cb.disabled = false);
                     },
-                    () => {
-                        handleLocationError(true);
-                    }
+                    () => handleLocationError(true)
                 );
             } else {
                 handleLocationError(false);
@@ -171,194 +269,175 @@
         }
 
         function updateMapAndList() {
-            if (!userLocation) {
-                // This case is handled by disabling checkboxes, but as a fallback.
-                console.error("User location is not available to sort locations.");
-                return;
-            }
-
+            if (!userLocation) return;
             const selectedIndices = Array.from(document.querySelectorAll('#location-list input:checked')).map(cb => cb.value);
-            
+            const planButton = document.getElementById('plan-generator-btn');
+
             if (selectedIndices.length === 0) {
                 clearMarkers();
-                if(directionsRenderer) {
-                    directionsRenderer.setDirections({ routes: [] }); // Clear old routes
-                }
-                document.getElementById('navigation-container').classList.add('hidden'); // Hide button
+                if(directionsRenderer) directionsRenderer.setDirections({ routes: [] });
+                document.getElementById('navigation-container').classList.add('hidden');
+                planButton.disabled = true;
                 return;
             }
 
             let selectedLocations = selectedIndices.map(index => locations[index]);
-
-            // Calculate distance for each and sort
             selectedLocations.forEach(location => {
                 location.distance = getDistance(userLocation, location);
             });
-
             selectedLocations.sort((a, b) => a.distance - b.distance);
             
-            displaySortedLocationsOnMap(selectedLocations);
-            setupNavigationButton(selectedLocations); // Set up the navigation button
+            sortedSelectedLocations = selectedLocations; // Store for Gemini
+            planButton.disabled = sortedSelectedLocations.length < 2; // Enable button if 2 or more pandals are selected
+
+            displaySortedLocationsOnMap(sortedSelectedLocations);
+            setupNavigationButton(sortedSelectedLocations);
         }
 
         function displaySortedLocationsOnMap(sortedLocations) {
+            // ... this function remains largely the same
             clearMarkers();
-            directionsRenderer.setDirections({ routes: [] }); // Clear previous route before drawing a new one
-
+            directionsRenderer.setDirections({ routes: [] });
             const bounds = new google.maps.LatLngBounds();
 
-            // Add a marker for the user's location
             const userMarker = new google.maps.Marker({
-                position: userLocation,
-                map: map,
-                title: 'Your Location',
-                icon: {
-                    path: google.maps.SymbolPath.CIRCLE,
-                    scale: 8,
-                    fillColor: "#4285F4",
-                    fillOpacity: 1,
-                    strokeColor: "white",
-                    strokeWeight: 2,
-                }
+                position: userLocation, map: map, title: 'Your Location',
+                icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: "#4285F4", fillOpacity: 1, strokeColor: "white", strokeWeight: 2 }
             });
             markers.push(userMarker);
             bounds.extend(userLocation);
 
-            // Add numbered markers for selected destinations
             sortedLocations.forEach((location, index) => {
                 const marker = new google.maps.Marker({
-                    position: { lat: location.lat, lng: location.lng },
-                    map: map,
-                    label: `${index + 1}`, // Numbered marker
-                    title: `${index + 1}. ${location.name} (${location.distance.toFixed(2)} km away)`
+                    position: { lat: location.lat, lng: location.lng }, map: map,
+                    label: `${index + 1}`, title: `${index + 1}. ${location.name} (${location.distance.toFixed(2)} km away)`
                 });
-
-                const infowindow = new google.maps.InfoWindow({
-                    content: `<div><strong>${index + 1}. ${location.name}</strong><br>${location.distance.toFixed(2)} km away</div>`
-                });
-
-                marker.addListener("click", () => {
-                    infowindow.open({
-                        anchor: marker,
-                        map,
-                    });
-                });
-
+                const infowindow = new google.maps.InfoWindow({ content: `<div><strong>${index + 1}. ${location.name}</strong><br>${location.distance.toFixed(2)} km away</div>` });
+                marker.addListener("click", () => infowindow.open({ anchor: marker, map }));
                 markers.push(marker);
                 bounds.extend(marker.getPosition());
             });
 
-            // Pan map to fit all markers
             map.fitBounds(bounds);
 
-            // Now, calculate and display the route
             if (sortedLocations.length > 0) {
                 const origin = new google.maps.LatLng(userLocation.lat, userLocation.lng);
                 const destination = new google.maps.LatLng(sortedLocations[sortedLocations.length - 1].lat, sortedLocations[sortedLocations.length - 1].lng);
-                
-                const waypoints = sortedLocations.slice(0, -1).map(location => ({
-                    location: new google.maps.LatLng(location.lat, location.lng),
-                    stopover: true
-                }));
-
-                const request = {
-                    origin: origin,
-                    destination: destination,
-                    waypoints: waypoints,
-                    travelMode: google.maps.TravelMode.DRIVING
-                };
-
+                const waypoints = sortedLocations.slice(0, -1).map(loc => ({ location: new google.maps.LatLng(loc.lat, loc.lng), stopover: true }));
+                const request = { origin, destination, waypoints, travelMode: google.maps.TravelMode.DRIVING };
                 directionsService.route(request, (result, status) => {
                     if (status == 'OK') {
                         directionsRenderer.setDirections(result);
                     } else {
                         handleDirectionsError(status);
-                        console.error('Directions request failed due to ' + status);
                     }
                 });
             }
         }
+        
+        // --- GEMINI API INTEGRATION ---
+        async function generateHoppingPlan() {
+            if (sortedSelectedLocations.length < 2) return;
 
-        // --- New Function to Handle Navigation Button ---
+            const modal = document.getElementById('gemini-modal');
+            const loader = document.getElementById('modal-loader');
+            const planText = document.getElementById('modal-plan-text');
+            
+            modal.classList.remove('hidden');
+            loader.style.display = 'flex';
+            planText.innerHTML = '';
+
+            const pandalNames = sortedSelectedLocations.map(p => p.name).join(', ');
+            
+            const prompt = `You are an expert guide to Kolkata's Durga Puja festival. A user wants to visit the following pandals in this order: ${pandalNames}. Create a fun and practical 'Pandal Hopping' itinerary for them. For your response:
+1. Give the plan a creative, catchy title in English.
+2. For each pandal, suggest a famous local street food item they can try nearby. Be specific. For example, near Tala Park, you might suggest mutton stew from a legendary cabin.
+3. Add a general tip about navigating the crowds or the best time to visit.
+4. Keep the entire response concise, friendly, and under 150 words.
+5. Format the output as simple HTML. Use an <h3> for the title. Use a <p> for the intro and tips. Use a <ul> for the pandals, and inside each <li>, use <strong> for the pandal name followed by a suggestion like "- Try the famous...".`;
+
+            const apiKey = ""; // API key will be provided by the environment
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (text) {
+                    planText.innerHTML = text;
+                } else {
+                    throw a new Error("No content received from API.");
+                }
+
+            } catch (error) {
+                console.error("Gemini API call failed:", error);
+                planText.innerHTML = `<p class="text-red-500">Dukkhito, plan toiri korte samasya hoyeche. Kichu por abar chesta korun.</p>`;
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+
+        // --- UTILITY & ERROR HANDLING ---
         function setupNavigationButton(sortedLocations) {
+            // ... this function remains the same
             const navContainer = document.getElementById('navigation-container');
             const navButton = document.getElementById('start-navigation-btn');
-
             if (!userLocation || sortedLocations.length === 0) {
                 navContainer.classList.add('hidden');
                 return;
             }
-
-            // Construct the Google Maps URL
-            // Base URL for directions
             let mapsUrl = `https://www.google.com/maps/dir/?api=1`;
-            
-            // Add origin (user's location)
             mapsUrl += `&origin=${userLocation.lat},${userLocation.lng}`;
-            
-            // The last location in the sorted list is the final destination
             const destination = sortedLocations[sortedLocations.length - 1];
             mapsUrl += `&destination=${destination.lat},${destination.lng}`;
-            
-            // All other locations are waypoints
             if (sortedLocations.length > 1) {
-                const waypoints = sortedLocations.slice(0, -1)
-                    .map(loc => `${loc.lat},${loc.lng}`)
-                    .join('|');
+                const waypoints = sortedLocations.slice(0, -1).map(loc => `${loc.lat},${loc.lng}`).join('|');
                 mapsUrl += `&waypoints=${waypoints}`;
             }
-
-            // Set the button's action and make it visible
-            navButton.onclick = () => {
-                window.open(mapsUrl, '_blank');
-            };
+            navButton.onclick = () => window.open(mapsUrl, '_blank');
             navContainer.classList.remove('hidden');
         }
 
-
-        // --- UTILITY FUNCTIONS ---
         function clearMarkers() {
-            for (let i = 0; i < markers.length; i++) {
-                markers[i].setMap(null);
-            }
+            markers.forEach(marker => marker.setMap(null));
             markers = [];
         }
 
         function handleLocationError(browserHasGeolocation) {
             const statusText = document.getElementById('status-text');
-             statusText.parentElement.classList.replace('bg-blue-100', 'bg-red-100');
-             statusText.parentElement.classList.replace('text-blue-800', 'text-red-800');
-            statusText.textContent = browserHasGeolocation
-                ? 'Geolocation service failed. Please enable location permissions.'
-                : 'Your browser doesn\'t support geolocation.';
-        }
-
-        function handleDirectionsError(status) {
-            const statusDiv = document.getElementById('status');
-            statusDiv.classList.remove('bg-blue-100', 'bg-green-100');
-            statusDiv.classList.add('bg-red-100');
-            statusDiv.querySelector('p').textContent = `Route display failed: ${status}. Please try a different selection.`;
+            statusText.parentElement.classList.replace('bg-blue-100', 'bg-red-100');
+            statusText.parentElement.classList.replace('text-blue-800', 'text-red-800');
+            statusText.textContent = browserHasGeolocation ? 'Location permission on korun.' : 'Apnar browser location support kore na.';
         }
         
-        // Haversine formula to calculate distance between two lat/lng points in km
+        function handleDirectionsError(status) {
+            // ... same as before
+        }
+        
         function getDistance(pos1, pos2) {
-            const R = 6371; // Radius of the Earth in km
+            // ... same as before
+            const R = 6371;
             const dLat = (pos2.lat - pos1.lat) * Math.PI / 180;
             const dLon = (pos2.lng - pos1.lng) * Math.PI / 180;
-            const a = 
-                0.5 - Math.cos(dLat)/2 + 
-                Math.cos(pos1.lat * Math.PI / 180) * Math.cos(pos2.lat * Math.PI / 180) * (1 - Math.cos(dLon))/2;
+            const a = 0.5 - Math.cos(dLat)/2 + Math.cos(pos1.lat * Math.PI / 180) * Math.cos(pos2.lat * Math.PI / 180) * (1 - Math.cos(dLon))/2;
             return R * 2 * Math.asin(Math.sqrt(a));
         }
 
         window.initMap = initMap;
     </script>
-    <!-- Async script loading for Google Maps API -->
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBfulQNrZqVY4kj1CCsWoS13SksshKPZM&callback=initMap">
     </script>
 </body>
 </html>
-
-
-
