@@ -185,7 +185,8 @@
         let markers = [];
         let directionsService;
         let directionsRenderer;
-        const GOOGLE_MAPS_API_KEY = 'AIzaSyBBfulQNrZqVY4kj1CCsWoS13SksshKPZM';
+        // *** IMPORTANT: Add your Gemini API Key here ***
+        const GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY'; // <= Replace this with your actual key
         let sortedSelectedLocations = [];
 
         // --- INITIALIZATION & UI SETUP ---
@@ -378,6 +379,12 @@
             loader.style.display = 'flex';
             planText.innerHTML = '';
 
+            if (GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY') {
+                planText.innerHTML = `<p class="text-red-500">Dukkhito, Gemini API key deoa nei. Please code-er GLOBAL VARIABLES section-e giye key-ti add korun.</p>`;
+                loader.style.display = 'none';
+                return;
+            }
+
             const pandalNames = sortedSelectedLocations.map(p => p.name).join(', ');
             
             const prompt = `You are an expert local guide for Kolkata's Durga Puja. A user wants a detailed plan to visit: ${pandalNames}.
@@ -402,8 +409,7 @@ For each pandal in the list, perform a comprehensive Google Search to gather the
 -   Parking URLs must be clickable \`<a href="..." target="_blank">\` links.
 -   At the very end, outside the main list, add a small \`<p>\` with a disclaimer: "Parking information is based on past data and the latest available search results and can change. Please verify on-site."`;
 
-            const apiKey = ""; // API key will be provided by the environment
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
 
             try {
                 const payload = {
