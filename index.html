@@ -54,20 +54,35 @@
                     <button id="manual-location-btn" class="text-xs text-indigo-600 hover:underline mt-1 font-medium">Location thik nei? Manual set korun</button>
                 </div>
                 
-                <!-- Gemini Plan Button -->
-                <div id="gemini-plan-container" class="mt-4">
-                    <button id="plan-generator-btn" disabled class="w-full bg-purple-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center">
-                        ✨ Plan Toiri Korun
+                <!-- Action Buttons -->
+                <div class="grid grid-cols-2 gap-2 mt-4">
+                    <button id="plan-generator-btn" disabled class="w-full bg-purple-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-purple-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
+                        ✨ Plan Toiri
                     </button>
-                    <p id="plan-helper-text" class="text-xs text-center text-gray-500 mt-1">(Duti ba tar beshi pandal select korun)</p>
+                    <button id="save-plan-btn" disabled class="w-full bg-green-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-green-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
+                        💾 Save Plan
+                    </button>
                 </div>
+                 <p id="plan-helper-text" class="text-xs text-center text-gray-500 mt-1">(Duti ba tar beshi pandal select korun)</p>
 
-                <div id="navigation-container" class="mt-4 hidden">
+
+                <div id="navigation-container" class="mt-2 hidden">
                     <button id="start-navigation-btn" class="w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors shadow-md">
                         Google Maps e Navigation
                     </button>
                 </div>
-                <h2 class="text-lg font-semibold my-3">Pandalguli select korun:</h2>
+                
+                <!-- Saved Plans Section -->
+                <div class="mt-4 border-t pt-2">
+                    <details>
+                        <summary class="font-semibold cursor-pointer text-gray-700">Saved Plans</summary>
+                        <div id="saved-plans-list" class="mt-2 max-h-32 overflow-y-auto custom-scrollbar pr-2 space-y-2">
+                            <!-- Saved plans will be injected here -->
+                        </div>
+                    </details>
+                </div>
+
+                <h2 class="text-lg font-semibold my-3 border-t pt-3">Pandalguli select korun:</h2>
             </div>
             
             <div id="location-list" class="flex-grow overflow-y-auto custom-scrollbar pr-2">
@@ -204,10 +219,12 @@
             populateLocationList();
             getUserLocation();
             setupEventListeners();
+            renderSavedPlans();
         }
 
         function setupEventListeners() {
             document.getElementById('plan-generator-btn').addEventListener('click', generateHoppingPlan);
+            document.getElementById('save-plan-btn').addEventListener('click', saveCurrentPlan);
             document.getElementById('close-modal-btn').addEventListener('click', () => document.getElementById('gemini-modal').classList.add('hidden'));
             document.getElementById('gemini-modal').addEventListener('click', (e) => {
                 if (e.target.id === 'gemini-modal') {
@@ -295,6 +312,7 @@
             if (!userLocation) return;
             const selectedIndices = Array.from(document.querySelectorAll('#location-list input:checked')).map(cb => cb.value);
             const planButton = document.getElementById('plan-generator-btn');
+            const saveButton = document.getElementById('save-plan-btn');
             const helperText = document.getElementById('plan-helper-text');
             const statusText = document.getElementById('status-text');
 
@@ -305,6 +323,8 @@
                  planButton.disabled = false;
                  helperText.style.display = 'none';
             }
+
+            saveButton.disabled = selectedIndices.length === 0;
 
             if (selectedIndices.length === 0) {
                 clearMarkers();
@@ -319,6 +339,11 @@
 
             const geocodePromises = selectedLocationData.map(location => {
                 return new Promise((resolve, reject) => {
+                    // If location already has lat/lng, resolve immediately
+                    if (location.lat && location.lng) {
+                        resolve(location);
+                        return;
+                    }
                     geocoder.geocode({ 'address': `${location.name}, Kolkata` }, (results, status) => {
                         if (status === 'OK') {
                             const newLocation = {
@@ -329,7 +354,6 @@
                             resolve(newLocation);
                         } else {
                             console.error(`Geocode was not successful for "${location.name}": ${status}`);
-                            // Reject so it can be filtered out
                             reject(location.name);
                         }
                     });
@@ -493,10 +517,107 @@ For each pandal in the list, perform a comprehensive Google Search to gather the
             }
         }
 
+        // --- SAVE/LOAD PLAN LOGIC ---
+        function saveCurrentPlan() {
+            const selectedIndices = Array.from(document.querySelectorAll('#location-list input:checked')).map(cb => cb.value);
+            if (selectedIndices.length === 0) {
+                return;
+            }
+
+            const planName = prompt("Apnar plan-er ekta naam din:", `My Pujo Plan ${new Date().toLocaleDateString()}`);
+            if (planName) {
+                const plans = JSON.parse(localStorage.getItem('pandalPlans')) || [];
+                const newPlan = {
+                    name: planName,
+                    date: new Date().toLocaleDateString(),
+                    indices: selectedIndices
+                };
+                plans.push(newPlan);
+                localStorage.setItem('pandalPlans', JSON.stringify(plans));
+                renderSavedPlans();
+            }
+        }
+
+        function renderSavedPlans() {
+            const plans = JSON.parse(localStorage.getItem('pandalPlans')) || [];
+            const listContainer = document.getElementById('saved-plans-list');
+            listContainer.innerHTML = ''; // Clear previous list
+
+            if (plans.length === 0) {
+                listContainer.innerHTML = `<p class="text-xs text-gray-500 text-center">Kono plan ekhono save kora hoeni.</p>`;
+                return;
+            }
+
+            plans.forEach((plan, index) => {
+                const planEl = document.createElement('div');
+                planEl.className = 'p-2 border rounded-md bg-gray-50';
+                
+                planEl.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-semibold text-sm">${plan.name}</p>
+                            <p class="text-xs text-gray-500">${plan.date}</p>
+                        </div>
+                        <div class="flex space-x-1">
+                            <button class="load-plan-btn text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">Load</button>
+                            <button class="delete-plan-btn text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Delete</button>
+                        </div>
+                    </div>
+                `;
+
+                planEl.querySelector('.load-plan-btn').addEventListener('click', () => loadPlan(index));
+                planEl.querySelector('.delete-plan-btn').addEventListener('click', (event) => deletePlan(index, event));
+                
+                listContainer.appendChild(planEl);
+            });
+        }
+
+        function loadPlan(index) {
+            const plans = JSON.parse(localStorage.getItem('pandalPlans')) || [];
+            const plan = plans[index];
+            if (!plan) return;
+
+            // Uncheck all boxes first
+            document.querySelectorAll('#location-list input:checked').forEach(cb => cb.checked = false);
+
+            // Check the boxes from the saved plan
+            plan.indices.forEach(pandalIndex => {
+                const checkbox = document.getElementById(`loc-${pandalIndex}`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+            });
+
+            // Update the map
+            updateMapAndList();
+        }
+
+        function deletePlan(index, event) {
+            const deleteBtn = event.target;
+            
+            if (deleteBtn.textContent === 'Delete') {
+                deleteBtn.textContent = 'Sure?';
+                deleteBtn.classList.replace('bg-red-500', 'bg-yellow-500');
+                deleteBtn.classList.replace('hover:bg-red-600', 'hover:bg-yellow-600');
+                // Set a timeout to revert the button if not clicked again
+                setTimeout(() => {
+                    if (deleteBtn.textContent === 'Sure?') {
+                        deleteBtn.textContent = 'Delete';
+                        deleteBtn.classList.replace('bg-yellow-500', 'bg-red-500');
+                        deleteBtn.classList.replace('hover:bg-yellow-600', 'hover:bg-red-600');
+                    }
+                }, 3000); // Reverts after 3 seconds
+            } else {
+                const plans = JSON.parse(localStorage.getItem('pandalPlans')) || [];
+                plans.splice(index, 1);
+                localStorage.setItem('pandalPlans', JSON.stringify(plans));
+                renderSavedPlans();
+            }
+        }
+
 
         // --- UTILITY & ERROR HANDLING ---
         function setupNavigationButton(sortedLocations) {
-            // ... this function remains the same
             const navContainer = document.getElementById('navigation-container');
             const navButton = document.getElementById('start-navigation-btn');
             if (!userLocation || sortedLocations.length === 0) {
@@ -534,7 +655,6 @@ For each pandal in the list, perform a comprehensive Google Search to gather the
         }
         
         function getDistance(pos1, pos2) {
-            // ... same as before
             const R = 6371;
             const dLat = (pos2.lat - pos1.lat) * Math.PI / 180;
             const dLon = (pos2.lng - pos1.lng) * Math.PI / 180;
@@ -545,7 +665,7 @@ For each pandal in the list, perform a comprehensive Google Search to gather the
         window.initMap = initMap;
     </script>
     <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBfulQNrZqVY4kj1CCsWoS13SksshKPZM&callback=initMap">
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBfulQNrZqVY4kj1CCsWoS13SksshKPZM&callback=initMap&libraries=geocoding">
     </script>
 </body>
 </html>
