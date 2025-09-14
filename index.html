@@ -376,7 +376,7 @@
                 if (text) {
                     planText.innerHTML = text;
                 } else {
-                    throw a new Error("No content received from API.");
+                    throw new Error("No content received from API.");
                 }
 
             } catch (error) {
@@ -422,7 +422,7 @@
         }
         
         function handleDirectionsError(status) {
-            // ... same as before
+            console.warn("Directions request failed due to " + status);
         }
         
         function getDistance(pos1, pos2) {
@@ -441,3 +441,4 @@
     </script>
 </body>
 </html>
+
