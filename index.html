@@ -50,8 +50,8 @@
                 </div>
 
                 <div id="status" class="p-3 bg-blue-100 text-blue-800 rounded-md text-center">
-                    <p id="status-text">Apnar location neoa hochche...</p>
-                    <button id="manual-location-btn" class="text-xs text-indigo-600 hover:underline mt-1 font-medium">Location thik nei? Manual set korun</button>
+                    <p id="status-text">Getting your location...</p>
+                    <button id="manual-location-btn" class="text-xs text-indigo-600 hover:underline mt-1 font-medium">Wrong location? Set manually</button>
                 </div>
                 
                 <!-- Action Buttons -->
@@ -66,12 +66,12 @@
                         💾 Save
                     </button>
                 </div>
-                 <p id="plan-helper-text" class="text-xs text-center text-gray-500 mt-1">(Plan korar jonno duti ba tar beshi pandal select korun)</p>
+                 <p id="plan-helper-text" class="text-xs text-center text-gray-500 mt-1">(Select 2 or more pandals for a plan)</p>
 
 
                 <div id="navigation-container" class="mt-2 hidden">
                     <button id="start-navigation-btn" class="w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors shadow-md">
-                        Google Maps e Navigation
+                        Navigate in Google Maps
                     </button>
                 </div>
                 
@@ -85,7 +85,7 @@
                     </details>
                 </div>
 
-                <h2 class="text-lg font-semibold my-3 border-t pt-3">Pandalguli select korun:</h2>
+                <h2 class="text-lg font-semibold my-3 border-t pt-3">Select Pandals:</h2>
             </div>
             
             <div id="location-list" class="flex-grow overflow-y-auto custom-scrollbar pr-2">
@@ -320,7 +320,7 @@
                         userLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
                         statusText.parentElement.classList.replace('bg-blue-100', 'bg-green-100');
                         statusText.parentElement.classList.replace('text-blue-800', 'text-green-800');
-                        statusText.textContent = "Location peye gechi! Pandal select korun.";
+                        statusText.textContent = "Location found! Please select pandals.";
                         document.querySelectorAll('#location-list input[type="checkbox"]').forEach(cb => cb.disabled = false);
                         document.getElementById('manual-location-btn').style.display = 'none';
                     },
@@ -336,7 +336,7 @@
             const statusText = document.getElementById('status-text');
             statusText.parentElement.classList.replace('bg-blue-100', 'bg-green-100');
             statusText.parentElement.classList.replace('text-blue-800', 'text-green-800');
-            statusText.textContent = "Location manually Esplanade set kora hoyeche.";
+            statusText.textContent = "Location manually set to Esplanade.";
             document.querySelectorAll('#location-list input[type="checkbox"]').forEach(cb => cb.disabled = false);
             document.getElementById('manual-location-btn').style.display = 'none';
             updateMapAndList(); // Update map after setting manual location
@@ -370,7 +370,7 @@
                 return;
             }
 
-            statusText.textContent = "Pandal location-gulo khunje ber korchi...";
+            statusText.textContent = "Finding pandal locations...";
             
             const selectedLocationData = selectedIndices.map(index => locations[index]);
 
@@ -408,11 +408,11 @@
             });
 
             if(geocodedLocations.length === 0) {
-                statusText.textContent = "Kono pandal khunje paoa gelo na.";
+                statusText.textContent = "No pandals could be found.";
                 return;
             }
 
-            statusText.textContent = `${geocodedLocations.length} ti pandal map-e dekhano hochche.`;
+            statusText.textContent = `Showing ${geocodedLocations.length} pandals on the map.`;
 
 
             geocodedLocations.forEach(location => {
@@ -474,11 +474,22 @@
         // --- GEMINI API INTEGRATION ---
         async function getThemeDetails() {
             if (sortedSelectedLocations.length === 0) return;
-            const prompt = `You are a helpful guide for Kolkata's Durga Puja. A user wants to know the theme for the following pandals: ${sortedSelectedLocations.map(p => p.name).join(', ')}.
+            const prompt = `You are an expert guide for Kolkata's Durga Puja. A user wants to know the theme for the following pandals: ${sortedSelectedLocations.map(p => p.name).join(', ')}.
 
-For each pandal, use Google Search to find its theme for Durga Puja 2025. Also, if available, mention the theme from the previous year (2024) for context.
+For each pandal, use Google Search to find its official theme for Durga Puja 2025.
 
-Format the response as a simple HTML list. For each pandal, use a <strong> tag for the name, followed by its theme information. If no theme is found for a particular year, state that.`;
+Your response must be in both English and Bengali.
+
+**Output Format:**
+- Do not add any title, introduction, or conclusion.
+- The entire output must be a single HTML \`<ul>\` list.
+- Each pandal should be an \`<li>\` item.
+- Inside each \`<li>\`, use a \`<strong>\` tag for the pandal name.
+- Below the name, provide the theme like this:
+  - English Theme: [The theme in English]
+  - Bengali Theme: [The theme in Bengali]
+- If no theme information for 2025 is found for a pandal after searching, you must state "Theme for 2025 has not been announced yet." in English, and "২০২৫ সালের থিম এখনও ঘোষণা করা হয়নি।" in Bengali.
+- Do not include any information about previous years.`;
             
             await callGeminiAPI("🎨 Pandal Theme Details", prompt);
         }
@@ -488,27 +499,27 @@ Format the response as a simple HTML list. For each pandal, use a <strong> tag f
             if (sortedSelectedLocations.length < 2) return;
             const prompt = `You are an expert local guide for Kolkata's Durga Puja. A user wants a detailed plan to visit: ${sortedSelectedLocations.map(p => p.name).join(', ')}.
 
-For each pandal in the list, perform a comprehensive Google Search to gather the following critical information:
+For each pandal in the list, perform a comprehensive Google Search to gather the following critical information in this specific order:
 
-1.  **Parking Information (Very Detailed):**
-    * Search for parking arrangements near "[Pandal Name] Durga Puja" for both the previous year and any available real-time information. This is the most critical information.
-    * Describe the typical parking situation (e.g., designated parking lot, street parking on specific roads, park-and-ride facility).
-    * If you find a specific parking area or lot name (e.g., "XYZ School Ground Parking"), provide a Google Maps URL for it. The URL should be a search link like: \`https://www.google.com/maps/search/?api=1&query=Parking+near+[Pandal Name],+Kolkata\`. If no specific lot is found, create this general search link for parking near the pandal.
-
-2.  **Nearby Restaurants (3 Options):**
+1.  **Nearby Restaurants (3 Options):**
     * Find three different, highly-rated restaurants within walking distance.
     * For each restaurant, provide its name and cuisine type (e.g., Bengali, Mughlai, Cafe).
+
+2.  **Parking Information (Very Detailed):**
+    * Search for parking arrangements near "[Pandal Name] Durga Puja" for both the previous year and any available real-time information.
+    * Describe the typical parking situation (e.g., designated parking lot, street parking on specific roads).
+    * Provide a Google Maps URL to search for parking. The URL must be in this format: \`https://www.google.com/maps/search/?api=1&query=Parking+near+[Pandal Name],+Kolkata\`.
 
 **Output Format:**
 -   Do not add any title, introduction, or conclusion.
 -   The entire output must be a single HTML \`<ul>\` list.
 -   Each pandal should be an \`<li>\` item.
 -   Inside each \`<li>\`, use a \`<strong>\` tag for the pandal name.
--   Use nested \`<ul>\` lists for "Parking Details" and "Restaurants".
+-   Use nested \`<ul>\` lists, showing "Restaurants" first, and then "Parking Details".
 -   Parking URLs must be clickable \`<a href="..." target="_blank">\` links.
 -   At the very end, outside the main list, add a small \`<p>\` with a disclaimer: "Parking information is based on past data and the latest available search results and can change. Please verify on-site."`;
             
-            await callGeminiAPI("✨ Apnar Pandal Hopping Plan", prompt);
+            await callGeminiAPI("✨ Your Pandal Hopping Plan", prompt);
         }
 
         async function callGeminiAPI(title, prompt) {
@@ -523,7 +534,7 @@ For each pandal in the list, perform a comprehensive Google Search to gather the
             modalText.innerHTML = '';
 
             if (GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY') {
-                modalText.innerHTML = `<p class="text-red-500">Dukkhito, Gemini API key deoa nei. Please code-er GLOBAL VARIABLES section-e giye key-ti add korun.</p>`;
+                modalText.innerHTML = `<p class="text-red-500">Sorry, the Gemini API key has not been set up. Please add the key in the GLOBAL VARIABLES section of the code.</p>`;
                 loader.style.display = 'none';
                 return;
             }
@@ -552,7 +563,7 @@ For each pandal in the list, perform a comprehensive Google Search to gather the
                         if (text) {
                             modalText.innerHTML = text;
                         } else if (result.candidates && result.candidates[0].finishReason === 'SAFETY') {
-                            modalText.innerHTML = `<p class="text-red-500">Dukkhito, kichu safety karone tothyo paoa gelo na. Onno pandal select kore chesta korun.</p>`;
+                            modalText.innerHTML = `<p class="text-red-500">Sorry, the information could not be retrieved due to safety reasons. Please try selecting different pandals.</p>`;
                         } else {
                             throw new Error("No content received from API.");
                         }
@@ -573,7 +584,7 @@ For each pandal in the list, perform a comprehensive Google Search to gather the
                 } catch (error) {
                     console.error(`Gemini API call failed on attempt ${attempt + 1}:`, error);
                     if (attempt === maxRetries - 1) { 
-                        modalText.innerHTML = `<p class="text-red-500">Dukkhito, server ekhon byasto ache. Kichu por abar chesta korun. Error: ${error.message}</p>`;
+                        modalText.innerHTML = `<p class="text-red-500">Sorry, the server is currently busy. Please try again later. Error: ${error.message}</p>`;
                         loader.style.display = 'none';
                     }
                 }
@@ -623,7 +634,7 @@ For each pandal in the list, perform a comprehensive Google Search to gather the
             listContainer.innerHTML = ''; // Clear previous list
 
             if (plans.length === 0) {
-                listContainer.innerHTML = `<p class="text-xs text-gray-500 text-center">Kono plan ekhono save kora hoeni.</p>`;
+                listContainer.innerHTML = `<p class="text-xs text-gray-500 text-center">No plans have been saved yet.</p>`;
                 return;
             }
 
@@ -716,7 +727,7 @@ For each pandal in the list, perform a comprehensive Google Search to gather the
             const statusText = document.getElementById('status-text');
             statusText.parentElement.classList.replace('bg-blue-100', 'bg-red-100');
             statusText.parentElement.classList.replace('text-blue-800', 'text-red-800');
-            statusText.textContent = browserHasGeolocation ? 'Location permission on korun.' : 'Apnar browser location support kore na.';
+            statusText.textContent = browserHasGeolocation ? 'Please enable location permissions.' : 'Your browser does not support Geolocation.';
             const manualBtn = document.getElementById('manual-location-btn');
             manualBtn.className = "mt-2 font-bold text-indigo-700 underline";
         }
