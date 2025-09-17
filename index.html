@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1280">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pandal Hopper Planner</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
             overscroll-behavior: none;
         }
         #map {
-            min-height: 400px;
+            min-height: 200px; /* Ensure map has a minimum height in flex-col */
         }
         .custom-scrollbar::-webkit-scrollbar { width: 8px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
@@ -30,9 +30,8 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        /* Custom styles for smaller marker labels */
         .gmaps-marker-label {
-            font-size: 12px !important; /* Increased from 10px for better visibility */
+            font-size: 12px !important;
             font-weight: bold !important;
             color: black !important; 
         }
@@ -40,13 +39,22 @@
 </head>
 <body class="bg-gray-100 text-gray-800">
 
-    <div class="flex flex-row h-screen max-h-screen">
+    <div id="main-container" class="flex flex-col md:flex-row h-screen max-h-screen">
         <!-- Sidebar for Controls -->
-        <div class="w-3/5 md:w-2/5 lg:w-1/3 p-2 md:p-4 bg-white shadow-lg flex flex-col max-h-screen">
+        <div id="sidebar" class="w-full md:w-2/5 p-2 md:p-4 bg-white shadow-lg flex flex-col h-1/2 md:h-screen transition-all duration-300">
             <div class="flex-shrink-0">
-                <div class="flex items-center mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                    <h1 class="text-xl md:text-2xl font-bold ml-2">Pandal Hopper</h1>
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                        <h1 class="text-xl md:text-2xl font-bold ml-2">Pandal Hopper</h1>
+                    </div>
+                     <div class="flex items-center space-x-1">
+                        <button id="toggle-view-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold p-1 rounded text-xs">Desktop View</button>
+                        <div id="zoom-controls" class="hidden md:flex space-x-1">
+                           <button id="zoom-out-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold w-6 h-6 rounded-full">-</button>
+                           <button id="zoom-in-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold w-6 h-6 rounded-full">+</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="status" class="p-3 bg-blue-100 text-blue-800 rounded-md text-center">
@@ -94,7 +102,7 @@
         </div>
 
         <!-- Map Area -->
-        <div class="flex-1 h-full">
+        <div id="map-container" class="flex-1 h-1/2 md:h-full w-full md:w-auto">
             <div id="map" class="w-full h-full"></div>
         </div>
     </div>
@@ -220,6 +228,9 @@
         // *** IMPORTANT: Add your Gemini API Key here ***
         const GEMINI_API_KEY = 'AIzaSyCR9eO8hbW1x8RCpejMCEh1e_dfBCteaYM';
         let sortedSelectedLocations = [];
+        const layoutSizes = ['w-1/3', 'w-2/5', 'w-3/5'];
+        let currentLayoutIndex = 1;
+        let isDesktopView = false; // Start in mobile view by default
 
         // --- INITIALIZATION & UI SETUP ---
         window.initMap = function() {
@@ -237,6 +248,10 @@
             getUserLocation();
             setupEventListeners();
             renderSavedPlans();
+            // Check screen size to set initial view
+            if (window.innerWidth >= 768) { // md breakpoint in Tailwind
+                toggleView(); // Switch to desktop view on larger screens
+            }
         }
 
         function setupEventListeners() {
@@ -255,6 +270,76 @@
                 document.getElementById('save-plan-modal').classList.add('hidden');
             });
             document.getElementById('confirm-save-btn').addEventListener('click', commitSavePlan);
+            // Listeners for layout buttons
+            document.getElementById('toggle-view-btn').addEventListener('click', toggleView);
+            document.getElementById('zoom-in-btn').addEventListener('click', () => {
+                if (currentLayoutIndex < layoutSizes.length - 1) {
+                    currentLayoutIndex++;
+                    updateDesktopLayout();
+                }
+            });
+            document.getElementById('zoom-out-btn').addEventListener('click', () => {
+                 if (currentLayoutIndex > 0) {
+                    currentLayoutIndex--;
+                    updateDesktopLayout();
+                }
+            });
+        }
+
+        function toggleView() {
+            isDesktopView = !isDesktopView;
+            const mainContainer = document.getElementById('main-container');
+            const sidebar = document.getElementById('sidebar');
+            const mapContainer = document.getElementById('map-container');
+            const toggleBtn = document.getElementById('toggle-view-btn');
+            const zoomControls = document.getElementById('zoom-controls');
+
+            if (isDesktopView) {
+                // Switch to Desktop View
+                mainContainer.classList.remove('flex-col');
+                mainContainer.classList.add('flex-row');
+
+                sidebar.classList.remove('w-full', 'h-1/2');
+                sidebar.classList.add('md:w-2/5'); // Apply a default desktop width
+                updateDesktopLayout(); // Apply the specific zoom level width
+
+                mapContainer.classList.remove('h-1/2', 'w-full');
+                mapContainer.classList.add('flex-1');
+                
+                toggleBtn.textContent = 'Mobile View';
+                zoomControls.classList.remove('hidden');
+                zoomControls.classList.add('md:flex');
+            } else {
+                // Switch to Mobile View
+                mainContainer.classList.remove('flex-row');
+                mainContainer.classList.add('flex-col');
+
+                layoutSizes.forEach(size => sidebar.classList.remove(size));
+                sidebar.classList.add('w-full', 'h-1/2');
+                
+                mapContainer.classList.remove('flex-1');
+                mapContainer.classList.add('h-1/2', 'w-full');
+
+                toggleBtn.textContent = 'Desktop View';
+                zoomControls.classList.add('hidden');
+            }
+             setTimeout(() => {
+                 if (map) google.maps.event.trigger(map, 'resize');
+            }, 300);
+        }
+
+        function updateDesktopLayout() {
+            if (!isDesktopView) return;
+            const sidebar = document.getElementById('sidebar');
+            layoutSizes.forEach(sizeClass => sidebar.classList.remove(sizeClass));
+            sidebar.classList.add(layoutSizes[currentLayoutIndex]);
+
+            document.getElementById('zoom-in-btn').disabled = currentLayoutIndex === layoutSizes.length - 1;
+            document.getElementById('zoom-out-btn').disabled = currentLayoutIndex === 0;
+
+            setTimeout(() => {
+                 if (map) google.maps.event.trigger(map, 'resize');
+            }, 300);
         }
         
         // --- Populate location list function with collapsible sections ---
@@ -351,6 +436,15 @@
             const helperText = document.getElementById('plan-helper-text');
             const statusText = document.getElementById('status-text');
 
+            // Reset all labels to their original names first
+            document.querySelectorAll('#location-list label').forEach(label => {
+                const forAttr = label.htmlFor;
+                const index = parseInt(forAttr.replace('loc-', ''), 10);
+                if (!isNaN(index) && locations[index]) {
+                    label.textContent = locations[index].name;
+                }
+            });
+
             if (selectedIndices.length < 2) {
                  planButton.disabled = true;
                  helperText.style.display = 'block';
@@ -372,11 +466,13 @@
 
             statusText.textContent = "Finding pandal locations...";
             
-            const selectedLocationData = selectedIndices.map(index => locations[index]);
+            const selectedLocationData = selectedIndices.map(index => ({
+                ...locations[index],
+                originalIndex: parseInt(index, 10)
+            }));
 
             const geocodePromises = selectedLocationData.map(location => {
                 return new Promise((resolve, reject) => {
-                    // If location already has lat/lng, resolve immediately
                     if (location.lat && location.lng) {
                         resolve(location);
                         return;
@@ -421,6 +517,14 @@
             geocodedLocations.sort((a, b) => a.distance - b.distance);
             
             sortedSelectedLocations = geocodedLocations;
+            
+            // Update labels with sorted numbers
+            sortedSelectedLocations.forEach((location, index) => {
+                const label = document.querySelector(`label[for="loc-${location.originalIndex}"]`);
+                if (label) {
+                    label.textContent = `${index + 1}. ${location.name}`;
+                }
+            });
 
             displaySortedLocationsOnMap(geocodedLocations);
             setupNavigationButton(geocodedLocations);
