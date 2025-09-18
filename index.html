@@ -41,7 +41,7 @@
 
     <div id="main-container" class="flex flex-col md:flex-row h-screen max-h-screen">
         <!-- Sidebar for Controls -->
-        <div id="sidebar" class="w-full md:w-2/5 p-2 md:p-4 bg-white shadow-lg flex flex-col h-1/2 md:h-screen transition-all duration-300">
+        <div id="sidebar" class="w-full md:w-2/5 p-2 md:p-4 bg-white shadow-lg flex flex-col h-3/5 md:h-screen transition-all duration-300">
             <div class="flex-shrink-0">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center">
@@ -102,7 +102,7 @@
         </div>
 
         <!-- Map Area -->
-        <div id="map-container" class="flex-1 h-1/2 md:h-full w-full md:w-auto">
+        <div id="map-container" class="flex-1 h-2/5 md:h-full w-full md:w-auto">
             <div id="map" class="w-full h-full"></div>
         </div>
     </div>
@@ -132,6 +132,19 @@
             <div class="flex justify-end space-x-2">
                 <button id="cancel-save-btn" class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-400">Cancel</button>
                 <button id="confirm-save-btn" class="bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700">Save</button>
+            </div>
+        </div>
+    </div>
+
+     <!-- Share Plan Modal -->
+    <div id="share-plan-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-1/3 p-6 relative">
+            <h2 class="text-xl font-bold mb-4">Share Your Plan</h2>
+            <p class="text-sm text-gray-600 mb-2">Copy this link and send it to your friends:</p>
+            <input type="text" id="share-link-input" class="w-full border rounded p-2 mb-4 bg-gray-100" readonly>
+            <div class="flex justify-end space-x-2">
+                <button id="close-share-btn" class="bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-400">Close</button>
+                <button id="copy-share-btn" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700">Copy</button>
             </div>
         </div>
     </div>
@@ -205,6 +218,7 @@
             // Salt Lake & Rajarhat
             { name: "Saltlake AK block", shortName: "AK Block", category: "Salt Lake & Rajarhat" },
             { name: "Newtown Sarbojanin Durgotsav", shortName: "Newtown", category: "Salt Lake & Rajarhat" },
+            { name: "Saltlake IB Block Durga Puja", shortName: "IB Block", category: "Salt Lake & Rajarhat" },
             // Central Kolkata
             { name: "College Square Durga Puja", shortName: "College Sq", category: "Central Kolkata" },
             { name: "Mohammad Ali Park", shortName: "Md Ali Park", category: "Central Kolkata" },
@@ -257,7 +271,7 @@
         function setupEventListeners() {
             document.getElementById('plan-generator-btn').addEventListener('click', generateHoppingPlan);
             document.getElementById('theme-details-btn').addEventListener('click', getThemeDetails);
-            document.getElementById('save-plan-btn').addEventListener('click', saveCurrentPlan);
+            document.getElementById('save-plan-btn').addEventListener('click', showSavePlanModal);
             document.getElementById('close-modal-btn').addEventListener('click', () => document.getElementById('generic-modal').classList.add('hidden'));
             document.getElementById('generic-modal').addEventListener('click', (e) => {
                 if (e.target.id === 'generic-modal') {
@@ -265,11 +279,16 @@
                 }
             });
             document.getElementById('manual-location-btn').addEventListener('click', setManualLocation);
-            // Listeners for the new save modal
+            // Listeners for the save modal
             document.getElementById('cancel-save-btn').addEventListener('click', () => {
                 document.getElementById('save-plan-modal').classList.add('hidden');
             });
             document.getElementById('confirm-save-btn').addEventListener('click', commitSavePlan);
+             // Listeners for the share modal
+            document.getElementById('close-share-btn').addEventListener('click', () => {
+                document.getElementById('share-plan-modal').classList.add('hidden');
+            });
+            document.getElementById('copy-share-btn').addEventListener('click', copyShareLink);
             // Listeners for layout buttons
             document.getElementById('toggle-view-btn').addEventListener('click', toggleView);
             document.getElementById('zoom-in-btn').addEventListener('click', () => {
@@ -299,11 +318,11 @@
                 mainContainer.classList.remove('flex-col');
                 mainContainer.classList.add('flex-row');
 
-                sidebar.classList.remove('w-full', 'h-1/2');
+                sidebar.classList.remove('w-full', 'h-3/5');
                 sidebar.classList.add('md:w-2/5'); // Apply a default desktop width
                 updateDesktopLayout(); // Apply the specific zoom level width
 
-                mapContainer.classList.remove('h-1/2', 'w-full');
+                mapContainer.classList.remove('h-2/5', 'w-full');
                 mapContainer.classList.add('flex-1');
                 
                 toggleBtn.textContent = 'Mobile View';
@@ -315,10 +334,10 @@
                 mainContainer.classList.add('flex-col');
 
                 layoutSizes.forEach(size => sidebar.classList.remove(size));
-                sidebar.classList.add('w-full', 'h-1/2');
+                sidebar.classList.add('w-full', 'h-3/5');
                 
                 mapContainer.classList.remove('flex-1');
-                mapContainer.classList.add('h-1/2', 'w-full');
+                mapContainer.classList.add('h-2/5', 'w-full');
 
                 toggleBtn.textContent = 'Desktop View';
                 zoomControls.classList.add('hidden');
@@ -408,6 +427,7 @@
                         statusText.textContent = "Location found! Please select pandals.";
                         document.querySelectorAll('#location-list input[type="checkbox"]').forEach(cb => cb.disabled = false);
                         document.getElementById('manual-location-btn').style.display = 'none';
+                        loadPlanFromUrl(); // Check for shared plan after getting location
                     },
                     () => handleLocationError(true)
                 );
@@ -424,7 +444,7 @@
             statusText.textContent = "Location manually set to Esplanade.";
             document.querySelectorAll('#location-list input[type="checkbox"]').forEach(cb => cb.disabled = false);
             document.getElementById('manual-location-btn').style.display = 'none';
-            updateMapAndList(); // Update map after setting manual location
+            loadPlanFromUrl(); // Check for shared plan after setting manual location
         }
 
         async function updateMapAndList() {
@@ -696,13 +716,12 @@ For each pandal in the list, perform a comprehensive Google Search to gather the
         }
 
 
-        // --- SAVE/LOAD PLAN LOGIC ---
-        function saveCurrentPlan() {
+        // --- SAVE/LOAD/SHARE PLAN LOGIC ---
+        function showSavePlanModal() {
             const selectedIndices = Array.from(document.querySelectorAll('#location-list input:checked')).map(cb => cb.value);
             if (selectedIndices.length === 0) {
                 return;
             }
-            // Show the modal instead of prompt
             document.getElementById('plan-name-input').value = `My Pujo Plan ${new Date().toLocaleDateString()}`;
             document.getElementById('save-plan-modal').classList.remove('hidden');
         }
@@ -727,15 +746,13 @@ For each pandal in the list, perform a comprehensive Google Search to gather the
             localStorage.setItem('pandalPlans', JSON.stringify(plans));
             
             renderSavedPlans();
-            
-            // Hide the modal
             document.getElementById('save-plan-modal').classList.add('hidden');
         }
 
         function renderSavedPlans() {
             const plans = JSON.parse(localStorage.getItem('pandalPlans')) || [];
             const listContainer = document.getElementById('saved-plans-list');
-            listContainer.innerHTML = ''; // Clear previous list
+            listContainer.innerHTML = ''; 
 
             if (plans.length === 0) {
                 listContainer.innerHTML = `<p class="text-xs text-gray-500 text-center">No plans have been saved yet.</p>`;
@@ -753,12 +770,14 @@ For each pandal in the list, perform a comprehensive Google Search to gather the
                             <p class="text-xs text-gray-500">${plan.date}</p>
                         </div>
                         <div class="flex space-x-1">
+                            <button class="share-plan-btn text-xs bg-gray-500 text-white px-2 py-1 rounded hover:bg-gray-600">Share</button>
                             <button class="load-plan-btn text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">Load</button>
                             <button class="delete-plan-btn text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">Delete</button>
                         </div>
                     </div>
                 `;
 
+                planEl.querySelector('.share-plan-btn').addEventListener('click', () => sharePlan(index));
                 planEl.querySelector('.load-plan-btn').addEventListener('click', () => loadPlan(index));
                 planEl.querySelector('.delete-plan-btn').addEventListener('click', (event) => deletePlan(index, event));
                 
@@ -798,6 +817,55 @@ For each pandal in the list, perform a comprehensive Google Search to gather the
                 plans.splice(index, 1);
                 localStorage.setItem('pandalPlans', JSON.stringify(plans));
                 renderSavedPlans();
+            }
+        }
+        
+        function sharePlan(index) {
+            const plans = JSON.parse(localStorage.getItem('pandalPlans')) || [];
+            const plan = plans[index];
+            if (!plan) return;
+            
+            const baseUrl = window.location.href.split('?')[0];
+            const shareUrl = `${baseUrl}?plan=${plan.indices.join(',')}`;
+            
+            const shareInput = document.getElementById('share-link-input');
+            shareInput.value = shareUrl;
+            
+            document.getElementById('share-plan-modal').classList.remove('hidden');
+        }
+
+        function copyShareLink() {
+            const shareInput = document.getElementById('share-link-input');
+            shareInput.select();
+            shareInput.setSelectionRange(0, 99999); // For mobile devices
+            try {
+                document.execCommand('copy');
+                const copyBtn = document.getElementById('copy-share-btn');
+                copyBtn.textContent = 'Copied!';
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy';
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+            }
+        }
+        
+        function loadPlanFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const planIndices = urlParams.get('plan');
+            if (planIndices) {
+                const indices = planIndices.split(',');
+                document.querySelectorAll('#location-list input:checked').forEach(cb => cb.checked = false);
+                indices.forEach(index => {
+                    const checkbox = document.getElementById(`loc-${index}`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+                updateMapAndList();
+
+                // Clean the URL
+                window.history.pushState({}, document.title, window.location.pathname);
             }
         }
 
