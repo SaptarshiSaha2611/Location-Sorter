@@ -41,7 +41,7 @@
 
     <div id="main-container" class="flex flex-col md:flex-row h-screen max-h-screen">
         <!-- Sidebar for Controls -->
-        <div id="sidebar" class="w-full md:w-2/5 p-2 md:p-4 bg-white shadow-lg flex flex-col h-2/3 md:h-screen transition-all duration-300">
+        <div id="sidebar" class="w-full md:w-2/5 p-2 md:p-4 bg-white shadow-lg flex flex-col h-3/5 md:h-screen transition-all duration-300">
             <div class="flex-shrink-0">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center">
@@ -94,6 +94,15 @@
                 </div>
 
                 <h2 class="text-lg font-semibold my-3 border-t pt-3">Select Pandals:</h2>
+                <div class="mb-3">
+                    <div class="relative">
+                        <input type="search" id="search-input" placeholder="Search for a pandal..." class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                        <svg class="absolute left-2 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <button id="clear-all-btn" class="w-full mt-2 bg-red-500 text-white font-bold py-2 px-2 rounded-lg hover:bg-red-600 transition-colors shadow-md text-sm">Clear Selections</button>
+                </div>
             </div>
             
             <div id="location-list" class="flex-grow overflow-y-auto custom-scrollbar pr-2">
@@ -102,7 +111,7 @@
         </div>
 
         <!-- Map Area -->
-        <div id="map-container" class="flex-1 h-1/3 md:h-full w-full md:w-auto">
+        <div id="map-container" class="flex-1 h-2/5 md:h-full w-full md:w-auto">
             <div id="map" class="w-full h-full"></div>
         </div>
     </div>
@@ -229,7 +238,9 @@
             { name: "Barisha Club Puja Ground and Community Hall", shortName: "Barisha Club", category: "West Kolkata & Behala" },
             { name: "Barisha Sarbojonin", shortName: "Barisha", category: "West Kolkata & Behala" },
             { name: "Behala Natundal Durga Puja", shortName: "Natundal", category: "West Kolkata & Behala" },
-            { name: "Thakurpukur State Bank Park", shortName: "SB Park", category: "West Kolkata & Behala" }
+            { name: "Thakurpukur State Bank Park", shortName: "SB Park", category: "West Kolkata & Behala" },
+            // Asian Paints Shortlisted
+            { name: "Shortlisted Pandals (To be announced)", shortName: "TBA", category: "Asian Paints Sharad Shamman" }
         ];
 
         // --- GLOBAL VARIABLES ---
@@ -303,6 +314,8 @@
                     updateDesktopLayout();
                 }
             });
+            document.getElementById('search-input').addEventListener('keyup', filterPandals);
+            document.getElementById('clear-all-btn').addEventListener('click', clearAllSelections);
         }
 
         function toggleView() {
@@ -373,7 +386,7 @@
                 }
                 categories[category].push({ ...location, originalIndex: index });
             });
-            const categoryOrder = ["North Kolkata & Lake Town", "Dum Dum", "South Kolkata", "Salt Lake & Rajarhat", "Central Kolkata", "West Kolkata & Behala"];
+            const categoryOrder = ["North Kolkata & Lake Town", "Dum Dum", "South Kolkata", "Salt Lake & Rajarhat", "Central Kolkata", "West Kolkata & Behala", "Asian Paints Sharad Shamman"];
             categoryOrder.forEach(categoryName => {
                 const locationsInCategory = categories[categoryName];
                 if (locationsInCategory && locationsInCategory.length > 0) {
@@ -398,6 +411,9 @@
                         checkbox.value = index;
                         checkbox.className = 'h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 disabled:opacity-50';
                         checkbox.disabled = true;
+                        if (location.shortName === 'TBA') {
+                            checkbox.disabled = true;
+                        }
                         checkbox.addEventListener('change', updateMapAndList);
                         const label = document.createElement('label');
                         label.htmlFor = `loc-${index}`;
@@ -425,7 +441,11 @@
                         statusText.parentElement.classList.replace('bg-blue-100', 'bg-green-100');
                         statusText.parentElement.classList.replace('text-blue-800', 'text-green-800');
                         statusText.textContent = "Location found! Please select pandals.";
-                        document.querySelectorAll('#location-list input[type="checkbox"]').forEach(cb => cb.disabled = false);
+                        document.querySelectorAll('#location-list input[type="checkbox"]').forEach(cb => {
+                            if (cb.value !== (locations.length - 1).toString()){ // Enable all except the TBA one
+                                cb.disabled = false;
+                            }
+                        });
                         document.getElementById('manual-location-btn').style.display = 'none';
                         loadPlanFromUrl(); // Check for shared plan after getting location
                     },
@@ -442,7 +462,11 @@
             statusText.parentElement.classList.replace('bg-blue-100', 'bg-green-100');
             statusText.parentElement.classList.replace('text-blue-800', 'text-green-800');
             statusText.textContent = "Location manually set to Esplanade.";
-            document.querySelectorAll('#location-list input[type="checkbox"]').forEach(cb => cb.disabled = false);
+            document.querySelectorAll('#location-list input[type="checkbox"]').forEach(cb => {
+                 if (cb.value !== (locations.length - 1).toString()){
+                    cb.disabled = false;
+                }
+            });
             document.getElementById('manual-location-btn').style.display = 'none';
             loadPlanFromUrl(); // Check for shared plan after setting manual location
         }
@@ -869,6 +893,13 @@ For each pandal in the list, perform a comprehensive Google Search to gather the
             }
         }
 
+        function clearAllSelections() {
+            document.querySelectorAll('#location-list input:checked').forEach(cb => {
+                cb.checked = false;
+            });
+            updateMapAndList();
+        }
+
 
         // --- UTILITY & ERROR HANDLING ---
         function setupNavigationButton(sortedLocations) {
@@ -914,6 +945,34 @@ For each pandal in the list, perform a comprehensive Google Search to gather the
             const dLon = (pos2.lng - pos1.lng) * Math.PI / 180;
             const a = 0.5 - Math.cos(dLat)/2 + Math.cos(pos1.lat * Math.PI / 180) * Math.cos(pos2.lat * Math.PI / 180) * (1 - Math.cos(dLon))/2;
             return R * 2 * Math.asin(Math.sqrt(a));
+        }
+
+        function filterPandals() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const pandalList = document.getElementById('location-list');
+            const categories = pandalList.getElementsByTagName('details');
+
+            for (let category of categories) {
+                let hasVisiblePandal = false;
+                const pandals = category.querySelectorAll('.flex.items-center');
+
+                for (let pandal of pandals) {
+                    const label = pandal.querySelector('label');
+                    if (label.textContent.toLowerCase().includes(searchTerm)) {
+                        pandal.style.display = 'flex';
+                        hasVisiblePandal = true;
+                    } else {
+                        pandal.style.display = 'none';
+                    }
+                }
+
+                if (hasVisiblePandal) {
+                    category.style.display = 'block';
+                    category.open = true;
+                } else {
+                    category.style.display = 'none';
+                }
+            }
         }
 
     </script>
