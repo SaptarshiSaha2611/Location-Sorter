@@ -48,9 +48,6 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
                         <h1 class="text-xl md:text-2xl font-bold ml-2">Pandal Hopper</h1>
                     </div>
-                     <div class="flex items-center space-x-1">
-                        <button id="toggle-view-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold p-1 rounded text-xs">Desktop View</button>
-                    </div>
                 </div>
 
                 <div id="status" class="p-3 bg-blue-100 text-blue-800 rounded-md text-center">
@@ -249,8 +246,6 @@
         // *** IMPORTANT: Add your Gemini API Key here ***
         const GEMINI_API_KEY = 'AIzaSyCR9eO8hbW1x8RCpejMCEh1e_dfBCteaYM';
         let sortedSelectedLocations = [];
-        const layoutSizes = ['w-1/3', 'w-2/5', 'w-3/5'];
-        let currentLayoutIndex = 1;
         let isDesktopView = false; // Start in mobile view by default
         const visitedPandals = new Set();
 
@@ -270,10 +265,6 @@
             getUserLocation();
             setupEventListeners();
             renderSavedPlans();
-            // Check screen size to set initial view
-            if (window.innerWidth >= 768) { // md breakpoint in Tailwind
-                toggleView(); // Switch to desktop view on larger screens
-            }
         }
 
         function setupEventListeners() {
@@ -287,98 +278,16 @@
                 }
             });
             document.getElementById('manual-location-btn').addEventListener('click', setManualLocation);
-            // Listeners for the new save modal
             document.getElementById('cancel-save-btn').addEventListener('click', () => {
                 document.getElementById('save-plan-modal').classList.add('hidden');
             });
             document.getElementById('confirm-save-btn').addEventListener('click', commitSavePlan);
-             // Listeners for the share modal
             document.getElementById('close-share-btn').addEventListener('click', () => {
                 document.getElementById('share-plan-modal').classList.add('hidden');
             });
             document.getElementById('copy-share-btn').addEventListener('click', copyShareLink);
-            // Listeners for layout buttons
-            document.getElementById('toggle-view-btn').addEventListener('click', toggleView);
-            const zoomInBtn = document.getElementById('zoom-in-btn');
-            if(zoomInBtn) {
-                zoomInBtn.addEventListener('click', () => {
-                    if (currentLayoutIndex < layoutSizes.length - 1) {
-                        currentLayoutIndex++;
-                        updateDesktopLayout();
-                    }
-                });
-            }
-            const zoomOutBtn = document.getElementById('zoom-out-btn');
-            if (zoomOutBtn) {
-                zoomOutBtn.addEventListener('click', () => {
-                     if (currentLayoutIndex > 0) {
-                        currentLayoutIndex--;
-                        updateDesktopLayout();
-                    }
-                });
-            }
             document.getElementById('search-input').addEventListener('keyup', filterPandals);
             document.getElementById('clear-all-btn').addEventListener('click', clearAllSelections);
-        }
-
-        function toggleView() {
-            isDesktopView = !isDesktopView;
-            const mainContainer = document.getElementById('main-container');
-            const sidebar = document.getElementById('sidebar');
-            const mapContainer = document.getElementById('map-container');
-            const toggleBtn = document.getElementById('toggle-view-btn');
-            const zoomControls = document.getElementById('zoom-controls');
-
-            if (isDesktopView) {
-                // Switch to Desktop View
-                mainContainer.classList.remove('flex-col');
-                mainContainer.classList.add('flex-row');
-
-                sidebar.classList.remove('w-full', 'h-2/3');
-                sidebar.classList.add('md:w-2/5'); // Apply a default desktop width
-                updateDesktopLayout(); // Apply the specific zoom level width
-
-                mapContainer.classList.remove('h-1/3', 'w-full');
-                mapContainer.classList.add('flex-1');
-                
-                toggleBtn.textContent = 'Mobile View';
-                if (zoomControls) {
-                    zoomControls.classList.remove('hidden');
-                    zoomControls.classList.add('md:flex');
-                }
-            } else {
-                // Switch to Mobile View
-                mainContainer.classList.remove('flex-row');
-                mainContainer.classList.add('flex-col');
-
-                layoutSizes.forEach(size => sidebar.classList.remove(size));
-                sidebar.classList.add('w-full', 'h-2/3');
-                
-                mapContainer.classList.remove('flex-1');
-                mapContainer.classList.add('h-1/3', 'w-full');
-
-                toggleBtn.textContent = 'Desktop View';
-                if (zoomControls) zoomControls.classList.add('hidden');
-            }
-             setTimeout(() => {
-                 if (map) google.maps.event.trigger(map, 'resize');
-            }, 300);
-        }
-
-        function updateDesktopLayout() {
-            if (!isDesktopView) return;
-            const sidebar = document.getElementById('sidebar');
-            layoutSizes.forEach(sizeClass => sidebar.classList.remove(sizeClass));
-            sidebar.classList.add(layoutSizes[currentLayoutIndex]);
-
-            const zoomInBtn = document.getElementById('zoom-in-btn');
-            const zoomOutBtn = document.getElementById('zoom-out-btn');
-            if(zoomInBtn) zoomInBtn.disabled = currentLayoutIndex === layoutSizes.length - 1;
-            if(zoomOutBtn) zoomOutBtn.disabled = currentLayoutIndex === 0;
-
-            setTimeout(() => {
-                 if (map) google.maps.event.trigger(map, 'resize');
-            }, 300);
         }
         
         // --- Populate location list function with collapsible sections ---
@@ -1070,3 +979,4 @@ Create a detailed, step-by-step itinerary. For each pandal, provide nearby resta
     </script>
 </body>
 </html>
+
