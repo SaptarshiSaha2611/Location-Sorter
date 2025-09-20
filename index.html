@@ -636,19 +636,26 @@ Your response must be in both English and Bengali.
         }
 
 
-        async function generateHoppingPlan() {
-            if (sortedSelectedLocations.length < 1 || sortedSelectedLocations.length > 6) return;
-            const pandalListString = sortedSelectedLocations.map((p, i) => `${i + 1}. ${p.name}`).join('\n');
+        const generateHoppingPlan = async () => {
+    if (sortedSelectedLocations.length < 1 || sortedSelectedLocations.length > 6) return;
+
+    // Determine the starting location, using Esplanade as a fallback
+    const startLocation = userLocation || { lat: 22.5679, lng: 88.3526 };
+
+    const pandalListString = sortedSelectedLocations.map((p, i) => `${i + 1}. ${p.name}`).join('\n');
 
             const prompt = `
 You are an expert local travel planner for Kolkata's Durga Puja. A user wants a detailed itinerary to visit the following pandals in a specific, pre-sorted order. The user's journey starts from their current location.
+
+// --- INSTRUCTION: The line below has been added to provide specific coordinates ---
+**User's Starting Location:** The user is starting their journey from the GPS coordinates: ${userLocation.lat}, ${userLocation.lng}.
 
 **Pandals to Visit (in order):**
 ${pandalListString}
 
 **Your Task:**
 Create a detailed, step-by-step itinerary. 
-1.  **Start Journey:** First, provide public transport directions from the user's current location to the first pandal (${sortedSelectedLocations[0].name}).
+1.  **Start Journey:** First, provide public transport directions from the user's current location (the coordinates provided above) to the first pandal (${sortedSelectedLocations[0].name}).
 2.  **Pandal Details:** For each pandal, provide nearby restaurant options.
 3.  **Inter-Pandal Travel:** For the travel segments between pandals, provide public transport directions and the estimated travel time.
 4.  **Total Time:** Finally, calculate an overall estimated time for the entire trip.
@@ -1018,4 +1025,3 @@ Create a detailed, step-by-step itinerary.
     </script>
 </body>
 </html>
-
