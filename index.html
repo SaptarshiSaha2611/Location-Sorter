@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pandal Hopper Planner</title>
+    <title>Durga Puja Pandal Hopper</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -46,7 +46,7 @@
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                        <h1 class="text-xl md:text-2xl font-bold ml-2">Pandal Hopper</h1>
+                        <h1 class="text-xl md:text-2xl font-bold ml-2">Durga Puja Pandal Hopper</h1>
                     </div>
                 </div>
 
@@ -67,7 +67,7 @@
                         💾 Save
                     </button>
                 </div>
-                 <p id="plan-helper-text" class="text-xs text-center text-gray-500 mt-1">(Select 1 to 5 pandals for a plan)</p>
+                 <p id="plan-helper-text" class="text-xs text-center text-gray-500 mt-1">(Select 1 to 6 pandals for a plan)</p>
 
 
                 <div id="navigation-container" class="mt-2 hidden">
@@ -155,85 +155,102 @@
     <script>
         // --- DATA ---
         const locations = [
-            // North Kolkata & Lake Town
-            { name: "Tala Prattoy Durga Puja Art", shortName: "Tala Prattoy", category: "North Kolkata & Lake Town" },
-            { name: "Tala Barowari Durga Puja", shortName: "Tala Barowari", category: "North Kolkata & Lake Town" },
-            { name: "Telengabagan durgotsab", shortName: "Telengabagan", category: "North Kolkata & Lake Town" },
-            { name: "Dakshinpara Durgotsab Committee", shortName: "Dakshinpara", category: "North Kolkata & Lake Town" },
-            { name: "Lake Town Adhibasi Brinda", shortName: "Lake Town", category: "North Kolkata & Lake Town" },
-            { name: "Kankurgachi Jubak Brinda", shortName: "Kankurgachi", category: "North Kolkata & Lake Town" },
-            { name: "Bagbazar Sarbojanin", shortName: "Bagbazar", category: "North Kolkata & Lake Town" },
-            { name: "lalabagan nabankur", shortName: "Lalabagan", category: "North Kolkata & Lake Town" },
-            { name: "Maniktala chaltabagan lohapatty", shortName: "Maniktala", category: "North Kolkata & Lake Town" },
-            { name: "Jagat Mukherjee Park", shortName: "Jagat M. Park", category: "North Kolkata & Lake Town" },
-            { name: "Sovabazar Rajbari", shortName: "Sovabazar", category: "North Kolkata & Lake Town" },
-            { name: "Kashi Bose Lane Sarbojanin", shortName: "Kashi Bose Ln", category: "North Kolkata & Lake Town" },
-            { name: "Sikdar bagan Sadharan Durgotsab", shortName: "Sikdar Bagan", category: "North Kolkata & Lake Town" },
-            { name: "Hatibagan NabinPally Durga Puja", shortName: "NabinPally", category: "North Kolkata & Lake Town" },
-            { name: "Hatibagan Sarbojonin", shortName: "Hatibagan", category: "North Kolkata & Lake Town" },
-            { name: "Kumartuli Park", shortName: "Kumartuli Park", category: "North Kolkata & Lake Town" },
-            { name: "Kumortuli Sarbojonin Durgotsab", shortName: "Kumortuli", category: "North Kolkata & Lake Town" },
-            { name: "Simla Byayam Samity", shortName: "Simla Byayam", category: "North Kolkata & Lake Town" },
-            { name: "Ahiritola Sarbojanin", shortName: "Ahiritola", category: "North Kolkata & Lake Town" },
-            { name: "Pathuriaghata pancher pally", shortName: "Pathuriaghata", category: "North Kolkata & Lake Town" },
-            { name: "Chorebagan Sarbojanin", shortName: "Chorebagan", category: "North Kolkata & Lake Town" },
-            { name: "Gauri Bari Sarbojanin Durga Puja Pandal", shortName: "Gauri Bari", category: "North Kolkata & Lake Town" },
+            // North Kolkata
+            { name: "Tala Prattoy Durga Puja Art", shortName: "Tala Prattoy", category: "North Kolkata", mustWatch: true },
+            { name: "Tala Barowari Durga Puja", shortName: "Tala Barowari", category: "North Kolkata" },
+            { name: "Bagbazar Sarbojanin", shortName: "Bagbazar", category: "North Kolkata" },
+            { name: "lalabagan nabankur", shortName: "Lalabagan", category: "North Kolkata" },
+            { name: "Maniktala chaltabagan lohapatty", shortName: "Maniktala", category: "North Kolkata" },
+            { name: "Jagat Mukherjee Park", shortName: "Jagat M. Park", category: "North Kolkata" },
+            { name: "Sovabazar Rajbari", shortName: "Sovabazar", category: "North Kolkata" },
+            { name: "Kashi Bose Lane Sarbojanin", shortName: "Kashi Bose Ln", category: "North Kolkata" },
+            { name: "Sikdar bagan Sadharan Durgotsab", shortName: "Sikdar Bagan", category: "North Kolkata" },
+            { name: "Hatibagan NabinPally Durga Puja", shortName: "NabinPally", category: "North Kolkata" },
+            { name: "Hatibagan Sarbojonin", shortName: "Hatibagan", category: "North Kolkata" },
+            { name: "Kumartuli Park", shortName: "Kumartuli Park", category: "North Kolkata" },
+            { name: "Kumortuli Sarbojonin Durgotsab", shortName: "Kumortuli", category: "North Kolkata" },
+            { name: "Simla Byayam Samity", shortName: "Simla Byayam", category: "North Kolkata" },
+            { name: "Ahiritola Sarbojanin", shortName: "Ahiritola", category: "North Kolkata" },
+            { name: "Pathuriaghata pancher pally", shortName: "Pathuriaghata", category: "North Kolkata" },
+            { name: "Chorebagan Sarbojanin", shortName: "Chorebagan", category: "North Kolkata" },
+            { name: "Gauri Bari Sarbojanin Durga Puja Pandal", shortName: "Gauri Bari", category: "North Kolkata" },
+
+            // Lake Town / Ultadanga
+            { name: "Telengabagan durgotsab", shortName: "Telengabagan", category: "Lake Town / Ultadanga" },
+            { name: "Lake Town Adhibasi Brinda", shortName: "Lake Town", category: "Lake Town / Ultadanga" },
+            { name: "Karbagan Sarbojanin Durgotsab Committee", shortName: "Karbagan", category: "Lake Town / Ultadanga" },
+
             // Dum Dum
-            { name: "Dakshinpara Durgotsab Committee (Dum Dum)", shortName: "Dakshinpara DD", category: "Dum Dum" },
+            { name: "Dakshinpara Durgotsab Committee", shortName: "Dakshinpara DD", category: "Dum Dum" },
             { name: "Dum Dum Tarun Dal Club", shortName: "Tarun Dal", category: "Dum Dum" },
             { name: "Dum Dum Park Sarbojanin Durga Puja Samity", shortName: "DD Park Sarbojanin", category: "Dum Dum" },
             { name: "Dum Dum Park Bharat Chakra", shortName: "DD Park Bharat", category: "Dum Dum" },
             { name: "Dakshindari Youth Forum Ground", shortName: "Dakshindari", category: "Dum Dum" },
             { name: "Aswininagar Bandhumahal Club, Baguiati", shortName: "Aswininagar", category: "Dum Dum" },
             { name: "Arjunpur Amra Sabai Club", shortName: "Arjunpur", category: "Dum Dum" },
+
             // South Kolkata
-            { name: "Haridevpur Ajeya Sanghati", shortName: "Haridevpur", category: "South Kolkata" },
-            { name: "Pally Unnayan Samity, Paschim Putiary", shortName: "Pally Unnayan", category: "South Kolkata" },
-            { name: "New Alipore Suruchi Sangha", shortName: "Suruchi Sangha", category: "South Kolkata" },
+            { name: "Suruchi Sangha", shortName: "Suruchi Sangha", category: "South Kolkata" },
             { name: "Chetla Agrani Club", shortName: "Chetla Agrani", category: "South Kolkata" },
-            { name: "Alipore Sarbojanin", shortName: "Alipore", category: "South Kolkata" },
-            { name: "Badamtala Ashar Sangha", shortName: "Badamtala", category: "South Kolkata" },
-            { name: "Kalighat Milan Sangha", shortName: "Milan Sangha", category: "South Kolkata" },
+            { name: "ALIPORE SARBOJANIN", shortName: "Alipore", category: "South Kolkata" },
             { name: "66 Pally Durgapuja Pandal", shortName: "66 Pally", category: "South Kolkata" },
+            { name: "Kalighat Milan Sangha", shortName: "Milan Sangha", category: "South Kolkata" },
+            { name: "Chakraberia Sarbojanin Durgotsab", shortName: "Chakraberia", category: "South Kolkata" },
             { name: "Abasar Sarbojanin Durgotsab Samity", shortName: "Abasar", category: "South Kolkata" },
             { name: "Tridhara Sammilani", shortName: "Tridhara", category: "South Kolkata" },
-            { name: "Naktala Udayan Sangha", shortName: "Naktala", category: "South Kolkata" },
             { name: "Mudiali Club Durga Puja Pandal", shortName: "Mudiali", category: "South Kolkata" },
             { name: "Shibmandir Sarbojanin Durgotsab Samiti", shortName: "Shibmandir", category: "South Kolkata" },
-            { name: "Chakraberia Sarbojanin Durgotsab", shortName: "Chakraberia", category: "South Kolkata" },
-            { name: "Vivekananda Park Athletic Club Durga Puja Ground", shortName: "Vivekananda", category: "South Kolkata" },
             { name: "Ballygunge Cultural Association Durga Puja", shortName: "Ballygunge", category: "South Kolkata" },
             { name: "Samaj Sebi Sangha", shortName: "Samaj Sebi", category: "South Kolkata" },
             { name: "Hindusthan Park Sarbojanin Durgotsab Committee", shortName: "Hindusthan Pk", category: "South Kolkata" },
             { name: "Singhi Park Sarbojanin Durga Puja Committee", shortName: "Singhi Park", category: "South Kolkata" },
             { name: "Ekdalia Evergreen Club", shortName: "Ekdalia", category: "South Kolkata" },
-            { name: "Jodhpur Park Durga Puja", shortName: "Jodhpur Park", category: "South Kolkata" },
-            { name: "95 Pally Association", shortName: "95 Pally", category: "South Kolkata" },
-            { name: "Babubagan Durgostav", shortName: "Babubagan", category: "South Kolkata" },
-            { name: "Kendua Shanti Sangha", shortName: "Kendua", category: "South Kolkata" },
-            { name: "Purbachal Shakti Sangha", shortName: "Purbachal", category: "South Kolkata" },
-            { name: "Santoshpur Lake Pally", shortName: "Lake Pally", category: "South Kolkata" },
-            { name: "Santoshpur Trikon park club ankan potigoti", shortName: "Trikon Park", category: "South Kolkata" },
-            { name: "Bosepukur Sitala Madir", shortName: "Bosepukur", category: "South Kolkata" },
-            { name: "Pally Mangal Samity Sarbojanin", shortName: "Pally Mangal", category: "South Kolkata" },
-            { name: "Rajdanga Naba Uday Sangha", shortName: "Rajdanga", category: "South Kolkata" },
+            
+            // Jadavpur
+            { name: "Jodhpur Park Durga Puja", shortName: "Jodhpur Park", category: "Jadavpur" },
+            { name: "95 Pally Association", shortName: "95 Pally", category: "Jadavpur" },
+            { name: "Babubagan Durgostav", shortName: "Babubagan", category: "Jadavpur" },
+            { name: "Kendua Shanti Sangha", shortName: "Kendua", category: "Jadavpur", mustWatch: true },
+            { name: "Purbachal Shakti Sangha", shortName: "Purbachal", category: "Jadavpur" },
+            { name: "Santoshpur Lake Pally", shortName: "Lake Pally", category: "Jadavpur" },
+            { name: "Santoshpur Trikon park club ankan potigoti", shortName: "Trikon Park", category: "Jadavpur" },
+            { name: "Bosepukur Sitala Madir", shortName: "Bosepukur", category: "Jadavpur" },
+            { name: "Pally Mangal Samity Sarbojanin", shortName: "Pally Mangal", category: "Jadavpur" },
+            { name: "Rajdanga Naba Uday Sangha", shortName: "Rajdanga", category: "Jadavpur" },
+            
+            // Haridevpur
+            { name: "Haridevpur 41 Pally Club", shortName: "Haridevpur 41", category: "Haridevpur" },
+            { name: "Ajeya Sanghati Club", shortName: "Ajeya Sanghati", category: "Haridevpur" },
+            { name: "Vivekananda Park Athletic Club Durga Puja Ground", shortName: "Vivekananda", category: "Haridevpur" },
+            { name: "Pally Unnayan Samity", shortName: "Pally Unnayan", category: "Haridevpur" },
+            
             // Salt Lake & Rajarhat
             { name: "Saltlake AK block", shortName: "AK Block", category: "Salt Lake & Rajarhat" },
-            { name: "Newtown Sarbojanin Durgotsav", shortName: "Newtown", category: "Salt Lake & Rajarhat" },
             { name: "Saltlake IB Block Durga Puja", shortName: "IB Block", category: "Salt Lake & Rajarhat" },
+            { name: "Newtown Sarbojanin Durgotsav", shortName: "Newtown", category: "Salt Lake & Rajarhat" },
+
             // Central Kolkata
             { name: "College Square Durga Puja", shortName: "College Sq", category: "Central Kolkata" },
             { name: "Mohammad Ali Park", shortName: "Md Ali Park", category: "Central Kolkata" },
             { name: "Santosh Mitra Square", shortName: "Santosh Mitra", category: "Central Kolkata" },
             { name: "Wellington Nagarik Kalyan Samity", shortName: "Wellington", category: "Central Kolkata" },
+            { name: "Kankurgachi Jubak Brinda", shortName: "Kankurgachi", category: "Central Kolkata" },
             { name: "Beliaghata 33 Pally", shortName: "Beliaghata 33", category: "Central Kolkata" },
+            
             // West Kolkata & Behala
             { name: "Barisha Club Puja Ground and Community Hall", shortName: "Barisha Club", category: "West Kolkata & Behala" },
             { name: "Barisha Sarbojonin", shortName: "Barisha", category: "West Kolkata & Behala" },
             { name: "Behala Natundal Durga Puja", shortName: "Natundal", category: "West Kolkata & Behala" },
+            { name: "Debdaru Fatak Sarbojanin Durgotsav", shortName: "Debdaru Fatak", category: "West Kolkata & Behala" },
             { name: "Thakurpukur State Bank Park", shortName: "SB Park", category: "West Kolkata & Behala" },
-            // Asian Paints Shortlisted
-            { name: "Shortlisted Pandals (To be announced)", shortName: "TBA", category: "Asian Paints Sharad Shamman" }
+            
+            // Kidderpore
+            { name: "Khidirpur 25 Palli Durga Puja", shortName: "Khidirpur 25", category: "Kidderpore" },
+            { name: "Khidderpur Sarbojanin Durgotsab", shortName: "Khidderpur Sarbojanin", category: "Kidderpore" },
+            { name: "Khidderpur 74 Pally", shortName: "Khidderpur 74", category: "Kidderpore" },
+
+            // Asian Paints Sharad Shamman Shortlisted
+            { name: "To be announced soon", shortName: "TBA", category: "Asian Paints Sharad Shamman Shortlisted" },
         ];
 
         // --- GLOBAL VARIABLES ---
@@ -246,7 +263,6 @@
         // *** IMPORTANT: Add your Gemini API Key here ***
         const GEMINI_API_KEY = 'AIzaSyCR9eO8hbW1x8RCpejMCEh1e_dfBCteaYM';
         let sortedSelectedLocations = [];
-        let isDesktopView = false; // Start in mobile view by default
         const visitedPandals = new Set();
 
         // --- INITIALIZATION & UI SETUP ---
@@ -302,7 +318,7 @@
                 }
                 categories[category].push({ ...location, originalIndex: index });
             });
-            const categoryOrder = ["North Kolkata & Lake Town", "Dum Dum", "South Kolkata", "Salt Lake & Rajarhat", "Central Kolkata", "West Kolkata & Behala", "Asian Paints Sharad Shamman"];
+            const categoryOrder = ["North Kolkata", "Lake Town / Ultadanga", "Dum Dum", "South Kolkata", "Jadavpur", "Haridevpur", "Salt Lake & Rajarhat", "Central Kolkata", "West Kolkata & Behala", "Kidderpore", "Asian Paints Sharad Shamman Shortlisted"];
             categoryOrder.forEach(categoryName => {
                 const locationsInCategory = categories[categoryName];
                 if (locationsInCategory && locationsInCategory.length > 0) {
@@ -338,7 +354,13 @@
                         
                         const label = document.createElement('label');
                         label.htmlFor = `loc-${index}`;
-                        label.textContent = location.name;
+
+                        if(location.mustWatch){
+                            label.innerHTML = `* <strong class="text-indigo-600">${location.name}</strong>`;
+                        } else {
+                            label.textContent = location.name;
+                        }
+                        
                         label.className = 'ml-3 text-sm text-gray-700';
 
                         leftDiv.appendChild(checkbox);
@@ -408,7 +430,12 @@
                 const forAttr = label.htmlFor;
                 const index = parseInt(forAttr.replace('loc-', ''), 10);
                 if (!isNaN(index) && locations[index]) {
-                    label.textContent = locations[index].name;
+                     const location = locations[index];
+                    if(location.mustWatch){
+                        label.innerHTML = `* <strong class="text-indigo-600">${location.name}</strong>`;
+                    } else {
+                        label.textContent = location.name;
+                    }
                 }
                  // Remove existing done buttons
                 const itemDiv = label.parentElement.parentElement;
@@ -418,9 +445,9 @@
                 }
             });
 
-            if (selectedIndices.length < 1 || selectedIndices.length > 5) {
+            if (selectedIndices.length < 1 || selectedIndices.length > 6) {
                  planButton.disabled = true;
-                 helperText.textContent = '(Select 1 to 5 pandals for a plan)';
+                 helperText.textContent = '(Select 1 to 6 pandals for a plan)';
             } else {
                  planButton.disabled = false;
                  helperText.textContent = `(${selectedIndices.length} selected, ready to plan!)`;
@@ -496,7 +523,11 @@
                 const itemDiv = document.getElementById(`loc-${location.originalIndex}`).parentElement.parentElement;
                 const label = itemDiv.querySelector('label');
                 if (label) {
-                    label.textContent = `${index + 1}. ${location.name}`;
+                    if (locations[location.originalIndex].mustWatch) {
+                        label.innerHTML = `${index + 1}. * <strong class="text-indigo-600">${location.name}</strong>`;
+                    } else {
+                        label.textContent = `${index + 1}. ${location.name}`;
+                    }
                 }
 
                 const doneBtn = document.createElement('button');
@@ -606,32 +637,43 @@ Your response must be in both English and Bengali.
 
 
         async function generateHoppingPlan() {
-            if (sortedSelectedLocations.length < 1 || sortedSelectedLocations.length > 5) return;
+            if (sortedSelectedLocations.length < 1 || sortedSelectedLocations.length > 6) return;
             const pandalListString = sortedSelectedLocations.map((p, i) => `${i + 1}. ${p.name}`).join('\n');
 
             const prompt = `
-You are an expert local travel planner for Kolkata's Durga Puja. A user wants a detailed itinerary to visit the following pandals in a specific, pre-sorted order. The user's journey starts from their current location near the first pandal.
+You are an expert local travel planner for Kolkata's Durga Puja. A user wants a detailed itinerary to visit the following pandals in a specific, pre-sorted order. The user's journey starts from their current location.
 
 **Pandals to Visit (in order):**
 ${pandalListString}
 
 **Your Task:**
-Create a detailed, step-by-step itinerary. For each pandal, provide nearby restaurant options. For the travel segments between pandals, provide public transport directions and the estimated travel time. Finally, calculate an overall estimated time for the entire trip.
+Create a detailed, step-by-step itinerary. 
+1.  **Start Journey:** First, provide public transport directions from the user's current location to the first pandal (${sortedSelectedLocations[0].name}).
+2.  **Pandal Details:** For each pandal, provide nearby restaurant options.
+3.  **Inter-Pandal Travel:** For the travel segments between pandals, provide public transport directions and the estimated travel time.
+4.  **Total Time:** Finally, calculate an overall estimated time for the entire trip.
 
 **Instructions for the Output:**
 1.  **Structure:** The entire output must be a single HTML structure.
-2.  **For each Pandal:**
+2.  **Initial Travel:** Start with a section with an \`<h4>\` tag: "<h4>Travel to First Pandal: ${sortedSelectedLocations[0].name}</h4>". Detail the public transport options (metro, bus, auto) and state the **Estimated Travel Time**.
+3.  **For each Pandal:**
     * Create a section for the pandal. Use an \`<h4>\` tag with the pandal's name and its stop number (e.g., "<h4>1. Bagbazar Sarbojanin</h4>").
     * Inside this section, create a sub-section for "Nearby Restaurants". List 2-3 highly-rated restaurant options in an unordered list (\`<ul>\`), mentioning the cuisine type for each.
-3.  **For each Travel Segment (between two pandals):**
+4.  **For each Travel Segment (between subsequent pandals):**
     * Create a separate section for the travel instructions. Use an \`<h4>\` tag like "<h4>Travel to next pandal:</h4>".
     * Inside this, detail the public transport options (mentioning metro lines/stations, bus numbers, or auto routes).
     * Clearly state the **Estimated Travel Time** for that segment (e.g., "25-35 minutes").
-4.  **Total Time:** At the very end, provide a "Total Estimated Trip Time". Assume each pandal visit takes approximately 45 minutes and add all the travel times to this. Present this in a highlighted box.
-5.  **Language:** Keep the output in simple, clear English.
+5.  **Total Time:** At the very end, provide a "Total Estimated Trip Time". Assume each pandal visit takes approximately 45 minutes and add all the travel times (including the initial journey) to this. Present this in a highlighted box.
+6.  **Language:** Keep the output in simple, clear English.
 
-**Example HTML structure for one pandal and the travel to the next:**
-
+**Example HTML structure:**
+<div class="mb-4 border-b pb-4">
+    <h4 class="text-lg font-bold">Travel to First Pandal: Pandal Name One</h4>
+     <div class="pl-4">
+        <p class="mt-2 text-sm">**Route:** [Directions from user's current location...]</p>
+        <p class="text-sm"><strong>Estimated Travel Time:</strong> [Time estimate]</p>
+    </div>
+</div>
 <div class="mb-4 border-b pb-4">
     <h4 class="text-lg font-bold text-indigo-600">1. Pandal Name One</h4>
     <div class="pl-4">
@@ -643,18 +685,15 @@ Create a detailed, step-by-step itinerary. For each pandal, provide nearby resta
     </div>
 </div>
 <div class="mb-4 border-b pb-4">
-    <h4 class="text-lg font-bold">Travel to Next Pandal</h4>
+    <h4 class="text-lg font-bold">Travel to Next Pandal: Pandal Name Two</h4>
      <div class="pl-4">
-        <p class="mt-2 text-sm">**Route:** Walk to Sovabazar Metro Station (5 mins). Take the North-South Line towards Kavi Subhash. Get down at Kalighat Station (approx. 20 mins). From there, it's a 10-minute walk.</p>
+        <p class="mt-2 text-sm">**Route:** [Directions from Pandal One to Pandal Two...]</p>
         <p class="text-sm"><strong>Estimated Travel Time:</strong> 35-45 minutes</p>
     </div>
 </div>
-<div class="mb-4 border-b pb-4">
-    <h4 class="text-lg font-bold text-indigo-600">2. Pandal Name Two</h4>
-    ... and so on ...
-</div>
+... and so on ...
 <div class="mt-6 p-3 bg-blue-100 text-blue-800 rounded-lg">
-    <p class="font-bold">Total Estimated Trip Time: [Your calculation here, e.g., 3-4 hours]</p>
+    <p class="font-bold">Total Estimated Trip Time: [Your calculation here]</p>
 </div>
 `;
             
