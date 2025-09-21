@@ -40,7 +40,6 @@
 <body class="bg-gray-100 text-gray-800">
 
     <div id="main-container" class="flex flex-col md:flex-row h-screen max-h-screen">
-        <!-- Sidebar for Controls -->
         <div id="sidebar" class="w-full md:w-2/5 p-2 md:p-4 bg-white shadow-lg flex flex-col h-5/6 md:h-screen transition-all duration-300">
             <div class="flex-shrink-0">
                 <div class="flex items-center justify-between mb-4">
@@ -55,17 +54,16 @@
                     <button id="manual-location-btn" class="text-xs text-indigo-600 hover:underline mt-1 font-medium">Wrong location? Set manually</button>
                 </div>
                 
-                <!-- Action Buttons -->
                 <div class="grid grid-cols-3 gap-2 mt-4">
                      <button id="theme-details-btn" disabled class="w-full bg-blue-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-blue-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
-                        🎨 Theme
-                    </button>
-                    <button id="plan-generator-btn" disabled class="w-full bg-purple-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-purple-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
-                        ✨ Plan
-                    </button>
-                    <button id="save-plan-btn" disabled class="w-full bg-green-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-green-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
-                        💾 Save
-                    </button>
+                         🎨 Theme
+                     </button>
+                     <button id="plan-generator-btn" disabled class="w-full bg-purple-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-purple-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
+                         ✨ Plan
+                     </button>
+                     <button id="save-plan-btn" disabled class="w-full bg-green-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-green-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
+                         💾 Save
+                     </button>
                 </div>
                  <p id="plan-helper-text" class="text-xs text-center text-gray-500 mt-1">(Select 1 to 6 pandals for a plan)</p>
 
@@ -76,48 +74,39 @@
                     </button>
                 </div>
                 
-                <!-- Saved Plans Section -->
                 <div class="mt-4 border-t pt-2">
                     <details>
                         <summary class="font-semibold cursor-pointer text-gray-700">Saved Plans</summary>
                         <div id="saved-plans-list" class="mt-2 max-h-32 overflow-y-auto custom-scrollbar pr-2 space-y-2">
-                            <!-- Saved plans will be injected here -->
-                        </div>
+                            </div>
                     </details>
                 </div>
 
                 <h2 class="text-lg font-semibold my-3 border-t pt-3">Select Pandals:</h2>
-                <!-- START: Added explanation for must-watch pandals -->
                 <p class="text-xs text-gray-500 italic mb-2">* <strong class="text-indigo-600">Bolded</strong> pandals are must-watch locations.</p>
-                <!-- END: Added explanation -->
-                 <div class="mb-3">
-                    <div class="relative">
-                        <input type="search" id="search-input" placeholder="Search for a pandal..." class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-                        <svg class="absolute left-2 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </div>
-                    <button id="clear-all-btn" class="w-full mt-2 bg-red-500 text-white font-bold py-2 px-2 rounded-lg hover:bg-red-600 transition-colors shadow-md text-sm">Clear Selections</button>
-                </div>
+                <div class="mb-3">
+                     <div class="relative">
+                         <input type="search" id="search-input" placeholder="Search for a pandal..." class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                         <svg class="absolute left-2 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                         </svg>
+                     </div>
+                     <button id="clear-all-btn" class="w-full mt-2 bg-red-500 text-white font-bold py-2 px-2 rounded-lg hover:bg-red-600 transition-colors shadow-md text-sm">Clear Selections</button>
+                 </div>
             </div>
             
             <div id="location-list" class="flex-grow overflow-y-auto custom-scrollbar pr-2">
-                <!-- Checkboxes dynamically inserted -->
-            </div>
-            <!-- START: Credit footer -->
+                </div>
             <div class="mt-auto pt-4 text-center text-sm text-gray-500">
                 <p>Created by <a href="https://github.com/saptarshisaha" class="text-indigo-600 hover:underline font-semibold" target="_blank" rel="noopener noreferrer">@saptarshisaha</a></p>
             </div>
-            <!-- END: Credit footer -->
-        </div>
+            </div>
 
-        <!-- Map Area -->
         <div id="map-container" class="flex-1 h-1/6 md:h-full w-full md:w-auto">
             <div id="map" class="w-full h-full"></div>
         </div>
     </div>
 
-    <!-- Generic Modal Structure -->
     <div id="generic-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-2/3 lg:w-1/2 p-6 relative">
             <button id="close-modal-btn" class="absolute top-3 right-3 text-gray-500 hover:text-gray-800">
@@ -133,7 +122,6 @@
         </div>
     </div>
 
-    <!-- Save Plan Modal -->
     <div id="save-plan-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-1/3 p-6 relative">
             <h2 class="text-xl font-bold mb-4">Save Your Plan</h2>
@@ -146,8 +134,7 @@
         </div>
     </div>
 
-     <!-- Share Plan Modal -->
-    <div id="share-plan-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
+     <div id="share-plan-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-1/3 p-6 relative">
             <h2 class="text-xl font-bold mb-4">Share Your Plan</h2>
             <p class="text-sm text-gray-600 mb-2">Copy this link and send it to your friends:</p>
@@ -290,7 +277,7 @@
             directionsRenderer = new google.maps.DirectionsRenderer({ map: map, suppressMarkers: true });
             geocoder = new google.maps.Geocoder();
             
-            populateLocationList();
+            populateLocationList(); // Initial population with default order
             getUserLocation();
             setupEventListeners();
             renderSavedPlans();
@@ -320,23 +307,37 @@
         }
         
         // --- Populate location list function with collapsible sections ---
-        function populateLocationList() {
+        function populateLocationList(sortedData = null) {
             const listContainer = document.getElementById('location-list');
-            listContainer.innerHTML = '';
-            const categories = {};
-            locations.forEach((location, index) => {
-                const category = location.category || "Uncategorized";
-                if (!categories[category]) {
-                    categories[category] = [];
-                }
-                categories[category].push({ ...location, originalIndex: index });
-            });
-            const categoryOrder = ["North Kolkata", "Lake Town / Ultadanga", "Dum Dum", "South Kolkata", "Jadavpur", "Haridevpur", "Salt Lake & Rajarhat", "Central Kolkata", "West Kolkata & Behala", "Kidderpore", "Asian Paints Sharad Shamman Shortlisted"];
-            categoryOrder.forEach(categoryName => {
-                const locationsInCategory = categories[categoryName];
+            listContainer.innerHTML = ''; // Clear previous list
+
+            // If no sorted data is provided, use the default order
+            if (!sortedData) {
+                const categories = {};
+                locations.forEach((location, index) => {
+                    const category = location.category || "Uncategorized";
+                    if (!categories[category]) {
+                        categories[category] = [];
+                    }
+                    categories[category].push({ ...location, originalIndex: index });
+                });
+                const categoryOrder = ["North Kolkata", "Lake Town / Ultadanga", "Dum Dum", "South Kolkata", "Jadavpur", "Haridevpur", "Salt Lake & Rajarhat", "Central Kolkata", "West Kolkata & Behala", "Kidderpore", "Asian Paints Sharad Shamman Shortlisted"];
+                
+                sortedData = categoryOrder.map(name => {
+                    return {
+                        name: name,
+                        pandals: categories[name] || []
+                    }
+                }).filter(cat => cat.pandals.length > 0);
+            }
+            
+            sortedData.forEach((categoryData, catIndex) => {
+                const categoryName = categoryData.name;
+                const locationsInCategory = categoryData.pandals;
+
                 if (locationsInCategory && locationsInCategory.length > 0) {
                     const detailsEl = document.createElement('details');
-                    detailsEl.open = true; // Categories are open by default
+                    detailsEl.open = userLocation ? (catIndex === 0) : true;
                     
                     const summaryEl = document.createElement('summary');
                     summaryEl.className = 'text-md font-semibold text-gray-700 cursor-pointer py-2 hover:bg-gray-100 rounded';
@@ -367,13 +368,19 @@
                         
                         const label = document.createElement('label');
                         label.htmlFor = `loc-${index}`;
-
+                        
+                        let labelHTML = '';
                         if(location.mustWatch){
-                            label.innerHTML = `* <strong class="text-indigo-600">${location.name}</strong>`;
+                            labelHTML += `* <strong class="text-indigo-600">${location.name}</strong>`;
                         } else {
-                            label.textContent = location.name;
+                            labelHTML += location.name;
+                        }
+
+                        if (location.distance !== undefined) {
+                            labelHTML += ` <span class="text-xs text-gray-500 font-medium">(${location.distance.toFixed(1)} km)</span>`;
                         }
                         
+                        label.innerHTML = labelHTML;
                         label.className = 'ml-3 text-sm text-gray-700';
 
                         leftDiv.appendChild(checkbox);
@@ -398,14 +405,19 @@
                         userLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
                         statusText.parentElement.classList.replace('bg-blue-100', 'bg-green-100');
                         statusText.parentElement.classList.replace('text-blue-800', 'text-green-800');
-                        statusText.textContent = "Location found! Please select pandals.";
-                        document.querySelectorAll('#location-list input[type="checkbox"]').forEach(cb => {
-                            if (cb.value !== (locations.length - 1).toString()){ // Enable all except the TBA one
-                                cb.disabled = false;
-                            }
-                        });
+                        statusText.textContent = "Location found! Sorting pandals by distance...";
+                        
                         document.getElementById('manual-location-btn').style.display = 'none';
-                        loadPlanFromUrl(); // Check for shared plan after getting location
+                        
+                        sortAndDisplayPandalsByDistance().then(() => {
+                            statusText.textContent = "Pandals sorted by proximity. Please select.";
+                            document.querySelectorAll('#location-list input[type="checkbox"]').forEach(cb => {
+                                if (locations[cb.value].shortName !== 'TBA'){
+                                    cb.disabled = false;
+                                }
+                            });
+                            loadPlanFromUrl();
+                        });
                     },
                     () => handleLocationError(true)
                 );
@@ -419,15 +431,96 @@
             const statusText = document.getElementById('status-text');
             statusText.parentElement.classList.replace('bg-blue-100', 'bg-green-100');
             statusText.parentElement.classList.replace('text-blue-800', 'text-green-800');
-            statusText.textContent = "Location manually set to Esplanade.";
-            document.querySelectorAll('#location-list input[type="checkbox"]').forEach(cb => {
-                 if (cb.value !== (locations.length - 1).toString()){
-                    cb.disabled = false;
-                }
-            });
+            statusText.textContent = "Location set to Esplanade. Sorting pandals...";
             document.getElementById('manual-location-btn').style.display = 'none';
-            loadPlanFromUrl(); // Check for shared plan after setting manual location
+
+            sortAndDisplayPandalsByDistance().then(() => {
+                statusText.textContent = "Pandals sorted by proximity. Please select.";
+                document.querySelectorAll('#location-list input[type="checkbox"]').forEach(cb => {
+                   if (locations[cb.value].shortName !== 'TBA'){
+                       cb.disabled = false;
+                   }
+                });
+                loadPlanFromUrl();
+            });
         }
+        
+        async function sortAndDisplayPandalsByDistance() {
+            if (!userLocation) return;
+
+            const statusText = document.getElementById('status-text');
+            statusText.textContent = "Calculating distances and sorting pandals...";
+
+            // 1. Geocode all locations if they don't have lat/lng already
+            const geocodePromises = locations.map((location, index) => {
+                return new Promise((resolve) => {
+                    if (location.lat && location.lng) {
+                        resolve({ ...location, originalIndex: index });
+                        return;
+                    }
+                    if (location.shortName === 'TBA') {
+                        resolve({ ...location, originalIndex: index });
+                        return;
+                    }
+                    geocoder.geocode({ 'address': `${location.name}, Kolkata` }, (results, status) => {
+                        if (status === 'OK') {
+                            locations[index].lat = results[0].geometry.location.lat();
+                            locations[index].lng = results[0].geometry.location.lng();
+                            resolve({ ...locations[index], originalIndex: index });
+                        } else {
+                            console.warn(`Geocode failed for "${location.name}": ${status}`);
+                            resolve(null); // Resolve with null on failure
+                        }
+                    });
+                });
+            });
+
+            const geocodedResults = await Promise.all(geocodePromises);
+            const validLocations = geocodedResults.filter(loc => loc && loc.lat);
+
+            // 2. Calculate distance for each pandal and group by category
+            const categories = {};
+            validLocations.forEach(location => {
+                const category = location.category || "Uncategorized";
+                if (!categories[category]) {
+                    categories[category] = { pandals: [], totalLat: 0, totalLng: 0 };
+                }
+                const distance = getDistance(userLocation, location);
+                location.distance = distance; // Add to the current object for initial sort/display
+
+                // *** FIX: Persist the calculated distance back to the main locations array ***
+                // This ensures that the updateMapAndList function can access it later for ALL pandals.
+                if (location.originalIndex !== undefined && locations[location.originalIndex]) {
+                    locations[location.originalIndex].distance = distance;
+                }
+
+                categories[category].pandals.push(location);
+                categories[category].totalLat += location.lat;
+                categories[category].totalLng += location.lng;
+            });
+
+            // 3. Calculate category center and sort categories
+            const sortedCategories = Object.keys(categories).map(categoryName => {
+                const categoryData = categories[categoryName];
+                const count = categoryData.pandals.length;
+                if (count > 0) {
+                    const center = { lat: categoryData.totalLat / count, lng: categoryData.totalLng / count };
+                    categoryData.distance = getDistance(userLocation, center);
+                } else {
+                    categoryData.distance = Infinity;
+                }
+                
+                categoryData.pandals.sort((a, b) => a.distance - b.distance);
+
+                return { name: categoryName, ...categoryData };
+            });
+
+            sortedCategories.sort((a, b) => a.distance - b.distance);
+            
+            // 4. Repopulate the list with sorted data
+            populateLocationList(sortedCategories);
+        }
+
 
         async function updateMapAndList() {
             if (!userLocation) return;
@@ -444,13 +537,17 @@
                 const index = parseInt(forAttr.replace('loc-', ''), 10);
                 if (!isNaN(index) && locations[index]) {
                      const location = locations[index];
-                    if(location.mustWatch){
-                        label.innerHTML = `* <strong class="text-indigo-600">${location.name}</strong>`;
-                    } else {
-                        label.textContent = location.name;
-                    }
+                     let labelHTML = '';
+                     if(location.mustWatch){
+                         labelHTML += `* <strong class="text-indigo-600">${location.name}</strong>`;
+                     } else {
+                         labelHTML += location.name;
+                     }
+                     if (location.distance !== undefined) {
+                         labelHTML += ` <span class="text-xs text-gray-500 font-medium">(${location.distance.toFixed(1)} km)</span>`;
+                     }
+                     label.innerHTML = labelHTML;
                 }
-                 // Remove existing done buttons
                 const itemDiv = label.parentElement.parentElement;
                 const existingDoneBtn = itemDiv.querySelector('.done-btn');
                 if (existingDoneBtn) {
@@ -484,38 +581,9 @@
                 originalIndex: parseInt(index, 10)
             }));
 
-            const geocodePromises = selectedLocationData.map(location => {
-                return new Promise((resolve, reject) => {
-                    if (location.lat && location.lng) {
-                        resolve(location);
-                        return;
-                    }
-                    geocoder.geocode({ 'address': `${location.name}, Kolkata` }, (results, status) => {
-                        if (status === 'OK') {
-                            const newLocation = {
-                                ...location,
-                                lat: results[0].geometry.location.lat(),
-                                lng: results[0].geometry.location.lng()
-                            };
-                            resolve(newLocation);
-                        } else {
-                            console.error(`Geocode was not successful for "${location.name}": ${status}`);
-                            reject(location.name);
-                        }
-                    });
-                });
-            });
-
-            const results = await Promise.allSettled(geocodePromises);
-            const geocodedLocations = [];
-            results.forEach(result => {
-                if (result.status === 'fulfilled') {
-                    geocodedLocations.push(result.value);
-                } else {
-                    console.warn(`Could not find location for: ${result.reason}`);
-                }
-            });
-
+            // Geocoding is already done, so we just use the cached lat/lng
+            const geocodedLocations = selectedLocationData.filter(loc => loc.lat && loc.lng);
+            
             if(geocodedLocations.length === 0) {
                 statusText.textContent = "No pandals could be found.";
                 return;
@@ -523,7 +591,7 @@
 
             statusText.textContent = `Showing ${geocodedLocations.length} pandals on the map.`;
 
-
+            // Sort selected locations by distance for the map and route
             geocodedLocations.forEach(location => {
                 location.distance = getDistance(userLocation, location);
             });
@@ -536,11 +604,16 @@
                 const itemDiv = document.getElementById(`loc-${location.originalIndex}`).parentElement.parentElement;
                 const label = itemDiv.querySelector('label');
                 if (label) {
+                    let labelHTML = `${index + 1}. `;
                     if (locations[location.originalIndex].mustWatch) {
-                        label.innerHTML = `${index + 1}. * <strong class="text-indigo-600">${location.name}</strong>`;
+                        labelHTML += `* <strong class="text-indigo-600">${location.name}</strong>`;
                     } else {
-                        label.textContent = `${index + 1}. ${location.name}`;
+                        labelHTML += location.name;
                     }
+                     if (location.distance !== undefined) {
+                         labelHTML += ` <span class="text-xs text-gray-500 font-medium">(${location.distance.toFixed(1)} km)</span>`;
+                     }
+                     label.innerHTML = labelHTML;
                 }
 
                 const doneBtn = document.createElement('button');
@@ -650,12 +723,12 @@ Your response must be in both English and Bengali.
 
 
         const generateHoppingPlan = async () => {
-    if (sortedSelectedLocations.length < 1 || sortedSelectedLocations.length > 6) return;
+            if (sortedSelectedLocations.length < 1 || sortedSelectedLocations.length > 6) return;
 
-    // Determine the starting location, using Esplanade as a fallback
-    const startLocation = userLocation || { lat: 22.5679, lng: 88.3526 };
+            // Determine the starting location, using Esplanade as a fallback
+            const startLocation = userLocation || { lat: 22.5679, lng: 88.3526 };
 
-    const pandalListString = sortedSelectedLocations.map((p, i) => `${i + 1}. ${p.name}`).join('\n');
+            const pandalListString = sortedSelectedLocations.map((p, i) => `${i + 1}. ${p.name}`).join('\n');
 
             const prompt = `
 You are an expert local travel planner for Kolkata's Durga Puja. A user wants a detailed itinerary to visit the following pandals in a specific, pre-sorted order. The user's journey starts from their current location.
@@ -690,9 +763,9 @@ Create a detailed, step-by-step itinerary.
 <div class="mb-4 border-b pb-4">
     <h4 class="text-lg font-bold">Travel to First Pandal: Pandal Name One</h4>
      <div class="pl-4">
-        <p class="mt-2 text-sm">**Route:** [Directions from user's current location...]</p>
-        <p class="text-sm"><strong>Estimated Travel Time:</strong> [Time estimate]</p>
-    </div>
+         <p class="mt-2 text-sm">**Route:** [Directions from user's current location...]</p>
+         <p class="text-sm"><strong>Estimated Travel Time:</strong> [Time estimate]</p>
+     </div>
 </div>
 <div class="mb-4 border-b pb-4">
     <h4 class="text-lg font-bold text-indigo-600">1. Pandal Name One</h4>
@@ -707,9 +780,9 @@ Create a detailed, step-by-step itinerary.
 <div class="mb-4 border-b pb-4">
     <h4 class="text-lg font-bold">Travel to Next Pandal: Pandal Name Two</h4>
      <div class="pl-4">
-        <p class="mt-2 text-sm">**Route:** [Directions from Pandal One to Pandal Two...]</p>
-        <p class="text-sm"><strong>Estimated Travel Time:</strong> 35-45 minutes</p>
-    </div>
+         <p class="mt-2 text-sm">**Route:** [Directions from Pandal One to Pandal Two...]</p>
+         <p class="text-sm"><strong>Estimated Travel Time:</strong> 35-45 minutes</p>
+     </div>
 </div>
 ... and so on ...
 <div class="mt-6 p-3 bg-blue-100 text-blue-800 rounded-lg">
@@ -997,7 +1070,7 @@ Create a detailed, step-by-step itinerary.
         }
         
         function getDistance(pos1, pos2) {
-            const R = 6371;
+            const R = 6371; // Radius of the Earth in km
             const dLat = (pos2.lat - pos1.lat) * Math.PI / 180;
             const dLon = (pos2.lng - pos1.lng) * Math.PI / 180;
             const a = 0.5 - Math.cos(dLat)/2 + Math.cos(pos1.lat * Math.PI / 180) * Math.cos(pos2.lat * Math.PI / 180) * (1 - Math.cos(dLon))/2;
@@ -1011,7 +1084,7 @@ Create a detailed, step-by-step itinerary.
 
             for (let category of categories) {
                 let hasVisiblePandal = false;
-                const pandals = category.querySelectorAll('.flex.items-center');
+                const pandals = category.querySelectorAll('.flex.items-center.justify-between');
 
                 for (let pandal of pandals) {
                     const label = pandal.querySelector('label');
