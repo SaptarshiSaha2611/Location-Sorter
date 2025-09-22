@@ -416,6 +416,7 @@
                                     cb.disabled = false;
                                 }
                             });
+                            loadPersistedState(); // Load saved selections and visited status
                             loadPlanFromUrl();
                         });
                     },
@@ -441,6 +442,7 @@
                        cb.disabled = false;
                    }
                 });
+                loadPersistedState(); // Load saved selections and visited status
                 loadPlanFromUrl();
             });
         }
@@ -486,10 +488,8 @@
                     categories[category] = { pandals: [], totalLat: 0, totalLng: 0 };
                 }
                 const distance = getDistance(userLocation, location);
-                location.distance = distance; // Add to the current object for initial sort/display
+                location.distance = distance; 
 
-                // *** FIX: Persist the calculated distance back to the main locations array ***
-                // This ensures that the updateMapAndList function can access it later for ALL pandals.
                 if (location.originalIndex !== undefined && locations[location.originalIndex]) {
                     locations[location.originalIndex].distance = distance;
                 }
@@ -525,13 +525,16 @@
         async function updateMapAndList() {
             if (!userLocation) return;
             const selectedIndices = Array.from(document.querySelectorAll('#location-list input:checked')).map(cb => cb.value);
+            
+            // --- PERSISTENCE: SAVE SELECTION STATE ---
+            localStorage.setItem('pandalHopperSelected', JSON.stringify(selectedIndices));
+
             const planButton = document.getElementById('plan-generator-btn');
             const saveButton = document.getElementById('save-plan-btn');
             const themeButton = document.getElementById('theme-details-btn');
             const helperText = document.getElementById('plan-helper-text');
             const statusText = document.getElementById('status-text');
 
-            // Reset all labels to their original names first
             document.querySelectorAll('#location-list label').forEach(label => {
                 const forAttr = label.htmlFor;
                 const index = parseInt(forAttr.replace('loc-', ''), 10);
@@ -581,7 +584,6 @@
                 originalIndex: parseInt(index, 10)
             }));
 
-            // Geocoding is already done, so we just use the cached lat/lng
             const geocodedLocations = selectedLocationData.filter(loc => loc.lat && loc.lng);
             
             if(geocodedLocations.length === 0) {
@@ -591,7 +593,6 @@
 
             statusText.textContent = `Showing ${geocodedLocations.length} pandals on the map.`;
 
-            // Sort selected locations by distance for the map and route
             geocodedLocations.forEach(location => {
                 location.distance = getDistance(userLocation, location);
             });
@@ -599,7 +600,6 @@
             
             sortedSelectedLocations = geocodedLocations;
             
-            // Update labels with sorted numbers and add "Done" button
             sortedSelectedLocations.forEach((location, index) => {
                 const itemDiv = document.getElementById(`loc-${location.originalIndex}`).parentElement.parentElement;
                 const label = itemDiv.querySelector('label');
@@ -635,7 +635,11 @@
                         label.classList.add('line-through', 'text-gray-400');
                         doneBtn.classList.add('bg-green-200');
                     }
-                    displaySortedLocationsOnMap(sortedSelectedLocations); // Redraw map to update markers
+                    
+                    // --- PERSISTENCE: SAVE VISITED STATE ---
+                    localStorage.setItem('pandalHopperVisited', JSON.stringify(Array.from(visitedPandals)));
+
+                    displaySortedLocationsOnMap(sortedSelectedLocations);
                 };
 
                 itemDiv.appendChild(doneBtn);
@@ -703,7 +707,7 @@
             if (sortedSelectedLocations.length === 0) return;
             const prompt = `You are an expert guide for Kolkata's Durga Puja. A user wants to know the theme for the following pandals: ${sortedSelectedLocations.map(p => p.name).join(', ')}.
 
-For each pandal, use Google Search to find its official theme for Durga Puja 2025.
+For each pandal, use Google Search to find its official theme for Durga Puja 2025, which is happening now.
 
 Your response must be in both English and Bengali.
 
@@ -715,7 +719,7 @@ Your response must be in both English and Bengali.
 - Below the name, provide the theme like this:
   - English Theme: [The theme in English]
   - Bengali Theme: [The theme in Bengali]
-- If no theme information for 2025 is found for a pandal after searching, you must state "Theme for 2025 has not been announced yet." in English, and "२०২৫ সালের থিম এখনও ঘোষণা করা হয়নি।" in Bengali.
+- If no theme information for 2025 is found for a pandal after searching, you must state "Theme for 2025 has not been announced yet." in English, and "২০২৫ সালের থিম এখনও ঘোষণা করা হয়নি।" in Bengali.
 - Do not include any information about previous years.`;
             
             await callGeminiAPI("🎨 Pandal Theme Details", prompt);
@@ -725,15 +729,12 @@ Your response must be in both English and Bengali.
         const generateHoppingPlan = async () => {
             if (sortedSelectedLocations.length < 1 || sortedSelectedLocations.length > 6) return;
 
-            // Determine the starting location, using Esplanade as a fallback
             const startLocation = userLocation || { lat: 22.5679, lng: 88.3526 };
-
             const pandalListString = sortedSelectedLocations.map((p, i) => `${i + 1}. ${p.name}`).join('\n');
 
             const prompt = `
-You are an expert local travel planner for Kolkata's Durga Puja. A user wants a detailed itinerary to visit the following pandals in a specific, pre-sorted order. The user's journey starts from their current location.
+You are an expert local travel planner for Kolkata's Durga Puja. A user wants a detailed itinerary to visit the following pandals in a specific, pre-sorted order. The user's journey starts from their current location. The current date is September 22, 2025, during the Durga Puja festival.
 
-// --- INSTRUCTION: The line below has been added to provide specific coordinates ---
 **User's Starting Location:** The user is starting their journey from the GPS coordinates: ${userLocation.lat}, ${userLocation.lng}.
 
 **Pandals to Visit (in order):**
@@ -741,7 +742,7 @@ ${pandalListString}
 
 **Your Task:**
 Create a detailed, step-by-step itinerary. 
-1.  **Start Journey:** First, provide public transport directions from the user's current location (the coordinates provided above) to the first pandal (${sortedSelectedLocations[0].name}).
+1.  **Start Journey:** First, provide public transport directions from the user's current location to the first pandal (${sortedSelectedLocations[0].name}).
 2.  **Pandal Details:** For each pandal, provide nearby restaurant options.
 3.  **Inter-Pandal Travel:** For the travel segments between pandals, provide public transport directions and the estimated travel time.
 4.  **Total Time:** Finally, calculate an overall estimated time for the entire trip.
@@ -765,23 +766,6 @@ Create a detailed, step-by-step itinerary.
      <div class="pl-4">
          <p class="mt-2 text-sm">**Route:** [Directions from user's current location...]</p>
          <p class="text-sm"><strong>Estimated Travel Time:</strong> [Time estimate]</p>
-     </div>
-</div>
-<div class="mb-4 border-b pb-4">
-    <h4 class="text-lg font-bold text-indigo-600">1. Pandal Name One</h4>
-    <div class="pl-4">
-        <p class="font-semibold mt-2">Nearby Restaurants:</p>
-        <ul class="list-disc list-inside text-sm">
-            <li>Restaurant A - Mughlai</li>
-            <li>Restaurant B - Bengali</li>
-        </ul>
-    </div>
-</div>
-<div class="mb-4 border-b pb-4">
-    <h4 class="text-lg font-bold">Travel to Next Pandal: Pandal Name Two</h4>
-     <div class="pl-4">
-         <p class="mt-2 text-sm">**Route:** [Directions from Pandal One to Pandal Two...]</p>
-         <p class="text-sm"><strong>Estimated Travel Time:</strong> 35-45 minutes</p>
      </div>
 </div>
 ... and so on ...
@@ -810,14 +794,14 @@ Create a detailed, step-by-step itinerary.
                 return;
             }
 
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
+	    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
             const payload = {
                 contents: [{ parts: [{ text: prompt }] }],
                 tools: [{ "google_search": {} }]
             };
 
             const maxRetries = 4;
-            let delay = 1000; // 1 second
+            let delay = 1000;
 
             for (let attempt = 0; attempt < maxRetries; attempt++) {
                 try {
@@ -839,7 +823,7 @@ Create a detailed, step-by-step itinerary.
                             throw new Error("No content received from API.");
                         }
                         loader.style.display = 'none';
-                        return; // Success, exit the function
+                        return;
                     }
 
                     if ((response.status === 503 || response.status === 429) && attempt < maxRetries - 1) {
@@ -888,7 +872,7 @@ Create a detailed, step-by-step itinerary.
                 name: planName,
                 date: new Date().toLocaleDateString(),
                 indices: selectedIndices,
-                visited: Array.from(visitedPandals) // Save visited pandals
+                visited: Array.from(visitedPandals)
             };
             plans.push(newPlan);
             localStorage.setItem('pandalPlans', JSON.stringify(plans));
@@ -990,7 +974,7 @@ Create a detailed, step-by-step itinerary.
         function copyShareLink() {
             const shareInput = document.getElementById('share-link-input');
             shareInput.select();
-            shareInput.setSelectionRange(0, 99999); // For mobile devices
+            shareInput.setSelectionRange(0, 99999);
             try {
                 document.execCommand('copy');
                 const copyBtn = document.getElementById('copy-share-btn');
@@ -1016,8 +1000,6 @@ Create a detailed, step-by-step itinerary.
                     }
                 });
                 updateMapAndList();
-
-                // Clean the URL
                 window.history.pushState({}, document.title, window.location.pathname);
             }
         }
@@ -1027,7 +1009,38 @@ Create a detailed, step-by-step itinerary.
                 cb.checked = false;
             });
             visitedPandals.clear();
+            
+            // --- PERSISTENCE: CLEAR SAVED STATE ---
+            localStorage.removeItem('pandalHopperSelected');
+            localStorage.removeItem('pandalHopperVisited');
+            
             updateMapAndList();
+        }
+
+        // --- NEW --- PERSISTENCE LOGIC
+        function loadPersistedState() {
+            // Load visited pandals
+            const storedVisited = localStorage.getItem('pandalHopperVisited');
+            if (storedVisited) {
+                const visitedIndices = JSON.parse(storedVisited);
+                visitedIndices.forEach(index => visitedPandals.add(index.toString()));
+            }
+
+            // Load selected pandals
+            const storedSelected = localStorage.getItem('pandalHopperSelected');
+            if (storedSelected) {
+                const selectedIndices = JSON.parse(storedSelected);
+                if (selectedIndices.length > 0) {
+                    selectedIndices.forEach(index => {
+                        const checkbox = document.getElementById(`loc-${index}`);
+                        if (checkbox) {
+                            checkbox.checked = true;
+                        }
+                    });
+                    // Trigger a UI update to reflect the loaded state
+                    updateMapAndList();
+                }
+            }
         }
 
 
@@ -1070,7 +1083,7 @@ Create a detailed, step-by-step itinerary.
         }
         
         function getDistance(pos1, pos2) {
-            const R = 6371; // Radius of the Earth in km
+            const R = 6371;
             const dLat = (pos2.lat - pos1.lat) * Math.PI / 180;
             const dLon = (pos2.lng - pos1.lng) * Math.PI / 180;
             const a = 0.5 - Math.cos(dLat)/2 + Math.cos(pos1.lat * Math.PI / 180) * Math.cos(pos2.lat * Math.PI / 180) * (1 - Math.cos(dLon))/2;
