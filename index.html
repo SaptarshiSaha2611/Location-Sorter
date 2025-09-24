@@ -39,8 +39,8 @@
 </head>
 <body class="bg-gray-100 text-gray-800">
 
-    <div id="main-container" class="flex flex-col md:flex-row h-screen max-h-screen">
-        <div id="sidebar" class="w-full md:w-2/5 p-2 md:p-4 bg-white shadow-lg flex flex-col h-5/6 md:h-screen transition-all duration-300">
+    <div id="main-container" class="flex flex-col md:flex-row h-screen max-h-screen relative overflow-hidden">
+        <div id="sidebar" class="w-full md:w-2/5 p-2 md:p-4 bg-white shadow-lg flex flex-col h-5/6 md:h-screen transition-transform transform duration-300 ease-in-out z-30 md:relative md:translate-x-0">
             <div class="flex-shrink-0">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center">
@@ -55,17 +55,17 @@
                 </div>
                 
                 <div class="grid grid-cols-3 gap-2 mt-4">
-                     <button id="theme-details-btn" disabled class="w-full bg-blue-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-blue-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
-                         🎨 Theme
-                     </button>
-                     <button id="plan-generator-btn" disabled class="w-full bg-purple-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-purple-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
-                         ✨ Plan
-                     </button>
-                     <button id="save-plan-btn" disabled class="w-full bg-green-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-green-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
-                         💾 Save
-                     </button>
+                        <button id="theme-details-btn" disabled class="w-full bg-blue-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-blue-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
+                            🎨 Theme
+                        </button>
+                        <button id="plan-generator-btn" disabled class="w-full bg-purple-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-purple-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
+                            ✨ Plan
+                        </button>
+                        <button id="save-plan-btn" disabled class="w-full bg-green-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-green-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
+                            💾 Save
+                        </button>
                 </div>
-                 <p id="plan-helper-text" class="text-xs text-center text-gray-500 mt-1">(Select 1 to 6 pandals for a plan)</p>
+                <p id="plan-helper-text" class="text-xs text-center text-gray-500 mt-1">(Select 1 to 6 pandals for a plan)</p>
 
 
                 <div id="navigation-container" class="mt-2 hidden">
@@ -78,34 +78,38 @@
                     <details>
                         <summary class="font-semibold cursor-pointer text-gray-700">Saved Plans</summary>
                         <div id="saved-plans-list" class="mt-2 max-h-32 overflow-y-auto custom-scrollbar pr-2 space-y-2">
-                            </div>
+                        </div>
                     </details>
                 </div>
 
                 <h2 class="text-lg font-semibold my-3 border-t pt-3">Select Pandals:</h2>
                 <p class="text-xs text-gray-500 italic mb-2">* <strong class="text-indigo-600">Bolded</strong> pandals are must-watch locations.</p>
                 <div class="mb-3">
-                     <div class="relative">
-                         <input type="search" id="search-input" placeholder="Search for a pandal..." class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-                         <svg class="absolute left-2 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                         </svg>
-                     </div>
-                     <button id="clear-all-btn" class="w-full mt-2 bg-red-500 text-white font-bold py-2 px-2 rounded-lg hover:bg-red-600 transition-colors shadow-md text-sm">Clear Selections</button>
-                 </div>
+                        <div class="relative">
+                            <input type="search" id="search-input" placeholder="Search for a pandal..." class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                            <svg class="absolute left-2 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                        <button id="clear-all-btn" class="w-full mt-2 bg-red-500 text-white font-bold py-2 px-2 rounded-lg hover:bg-red-600 transition-colors shadow-md text-sm">Clear Selections</button>
+                </div>
             </div>
             
             <div id="location-list" class="flex-grow overflow-y-auto custom-scrollbar pr-2">
-                </div>
+            </div>
             <div class="mt-auto pt-4 text-center text-sm text-gray-500">
                 <p>Created by <a href="https://github.com/saptarshisaha" class="text-indigo-600 hover:underline font-semibold" target="_blank" rel="noopener noreferrer">@saptarshisaha</a></p>
             </div>
             </div>
 
-        <div id="map-container" class="flex-1 h-1/6 md:h-full w-full md:w-auto">
+        <div id="map-container" class="flex-1 h-1/6 md:h-full w-full md:w-auto transition-all duration-300 ease-in-out">
             <div id="map" class="w-full h-full"></div>
         </div>
     </div>
+
+    <button id="view-toggle-btn" class="md:hidden fixed bottom-4 right-4 z-40 bg-indigo-600 text-white rounded-full p-4 shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform transform hover:scale-110">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+    </button>
 
     <div id="generic-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-2/3 lg:w-1/2 p-6 relative">
@@ -134,7 +138,7 @@
         </div>
     </div>
 
-     <div id="share-plan-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div id="share-plan-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-1/3 p-6 relative">
             <h2 class="text-xl font-bold mb-4">Share Your Plan</h2>
             <p class="text-sm text-gray-600 mb-2">Copy this link and send it to your friends:</p>
@@ -212,7 +216,7 @@
             { name: "Purbachal Shakti Sangha", shortName: "Purbachal", category: "Jadavpur" },
             { name: "Santoshpur Lake Pally", shortName: "Lake Pally", category: "Jadavpur" },
             { name: "Santoshpur Trikon park club ankan potigoti", shortName: "Trikon Park", category: "Jadavpur" },
-             { name: "Bosepukur Talbagan Sarbojanin Durga Puja Pandal", shortName: "Bosepukur Talbagan", category: "Jadavpur" },
+            { name: "Bosepukur Talbagan Sarbojanin Durga Puja Pandal", shortName: "Bosepukur Talbagan", category: "Jadavpur" },
             { name: "Bosepukur Sitala Madir", shortName: "Bosepukur", category: "Jadavpur" },
             { name: "Pally Mangal Samity Sarbojanin", shortName: "Pally Mangal", category: "Jadavpur" },
             { name: "Rajdanga Naba Uday Sangha", shortName: "Rajdanga", category: "Jadavpur", mustWatch: true },
@@ -264,6 +268,7 @@
         const GEMINI_API_KEY = 'AIzaSyCR9eO8hbW1x8RCpejMCEh1e_dfBCteaYM';
         let sortedSelectedLocations = [];
         const visitedPandals = new Set();
+        let isMapViewActive = false; // New state for FAB toggle
 
         // --- INITIALIZATION & UI SETUP ---
         window.initMap = function() {
@@ -304,6 +309,7 @@
             document.getElementById('copy-share-btn').addEventListener('click', copyShareLink);
             document.getElementById('search-input').addEventListener('keyup', filterPandals);
             document.getElementById('clear-all-btn').addEventListener('click', clearAllSelections);
+            document.getElementById('view-toggle-btn').addEventListener('click', toggleMobileView); // Listener for the new FAB
         }
         
         // --- Populate location list function with collapsible sections ---
@@ -438,9 +444,9 @@
             sortAndDisplayPandalsByDistance().then(() => {
                 statusText.textContent = "Pandals sorted by proximity. Please select.";
                 document.querySelectorAll('#location-list input[type="checkbox"]').forEach(cb => {
-                   if (locations[cb.value].shortName !== 'TBA'){
-                       cb.disabled = false;
-                   }
+                    if (locations[cb.value].shortName !== 'TBA'){
+                        cb.disabled = false;
+                    }
                 });
                 loadPersistedState(); // Load saved selections and visited status
                 loadPlanFromUrl();
@@ -539,31 +545,31 @@
                 const forAttr = label.htmlFor;
                 const index = parseInt(forAttr.replace('loc-', ''), 10);
                 if (!isNaN(index) && locations[index]) {
-                     const location = locations[index];
-                     let labelHTML = '';
-                     if(location.mustWatch){
-                         labelHTML += `* <strong class="text-indigo-600">${location.name}</strong>`;
-                     } else {
-                         labelHTML += location.name;
-                     }
-                     if (location.distance !== undefined) {
-                         labelHTML += ` <span class="text-xs text-gray-500 font-medium">(${location.distance.toFixed(1)} km)</span>`;
-                     }
-                     label.innerHTML = labelHTML;
+                        const location = locations[index];
+                        let labelHTML = '';
+                        if(location.mustWatch){
+                            labelHTML += `* <strong class="text-indigo-600">${location.name}</strong>`;
+                        } else {
+                            labelHTML += location.name;
+                        }
+                        if (location.distance !== undefined) {
+                            labelHTML += ` <span class="text-xs text-gray-500 font-medium">(${location.distance.toFixed(1)} km)</span>`;
+                        }
+                        label.innerHTML = labelHTML;
                 }
                 const itemDiv = label.parentElement.parentElement;
                 const existingDoneBtn = itemDiv.querySelector('.done-btn');
                 if (existingDoneBtn) {
-                   itemDiv.removeChild(existingDoneBtn);
+                    itemDiv.removeChild(existingDoneBtn);
                 }
             });
 
             if (selectedIndices.length < 1 || selectedIndices.length > 6) {
-                 planButton.disabled = true;
-                 helperText.textContent = '(Select 1 to 6 pandals for a plan)';
+                planButton.disabled = true;
+                helperText.textContent = '(Select 1 to 6 pandals for a plan)';
             } else {
-                 planButton.disabled = false;
-                 helperText.textContent = `(${selectedIndices.length} selected, ready to plan!)`;
+                planButton.disabled = false;
+                helperText.textContent = `(${selectedIndices.length} selected, ready to plan!)`;
             }
 
             saveButton.disabled = selectedIndices.length === 0;
@@ -610,10 +616,10 @@
                     } else {
                         labelHTML += location.name;
                     }
-                     if (location.distance !== undefined) {
-                         labelHTML += ` <span class="text-xs text-gray-500 font-medium">(${location.distance.toFixed(1)} km)</span>`;
-                     }
-                     label.innerHTML = labelHTML;
+                    if (location.distance !== undefined) {
+                        labelHTML += ` <span class="text-xs text-gray-500 font-medium">(${location.distance.toFixed(1)} km)</span>`;
+                    }
+                    label.innerHTML = labelHTML;
                 }
 
                 const doneBtn = document.createElement('button');
@@ -763,10 +769,10 @@ Create a detailed, step-by-step itinerary.
 **Example HTML structure:**
 <div class="mb-4 border-b pb-4">
     <h4 class="text-lg font-bold">Travel to First Pandal: Pandal Name One</h4>
-     <div class="pl-4">
-         <p class="mt-2 text-sm">**Route:** [Directions from user's current location...]</p>
-         <p class="text-sm"><strong>Estimated Travel Time:</strong> [Time estimate]</p>
-     </div>
+    <div class="pl-4">
+        <p class="mt-2 text-sm">**Route:** [Directions from user's current location...]</p>
+        <p class="text-sm"><strong>Estimated Travel Time:</strong> [Time estimate]</p>
+    </div>
 </div>
 ... and so on ...
 <div class="mt-6 p-3 bg-blue-100 text-blue-800 rounded-lg">
@@ -788,13 +794,13 @@ Create a detailed, step-by-step itinerary.
             loader.style.display = 'flex';
             modalText.innerHTML = '';
 
-            if (GEMINI_API_KEY === '') {
+            if (GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY_HERE' || GEMINI_API_KEY === '') {
                 modalText.innerHTML = `<p class="text-red-500">Sorry, the Gemini API key has not been set up. Please add the key in the GLOBAL VARIABLES section of the code.</p>`;
                 loader.style.display = 'none';
                 return;
             }
 
-	    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
             const payload = {
                 contents: [{ parts: [{ text: prompt }] }],
                 tools: [{ "google_search": {} }]
@@ -1115,6 +1121,32 @@ Create a detailed, step-by-step itinerary.
                 } else {
                     category.style.display = 'none';
                 }
+            }
+        }
+
+        // --- NEW --- Mobile View Toggle Function
+        function toggleMobileView() {
+            const sidebar = document.getElementById('sidebar');
+            const mapContainer = document.getElementById('map-container');
+            const viewToggleButton = document.getElementById('view-toggle-btn');
+
+            const mapIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>`;
+            const listIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" x2="21" y1="6" y2="6"></line><line x1="8" x2="21" y1="12" y2="12"></line><line x1="8" x2="21" y1="18" y2="18"></line><line x1="3" x2="3.01" y1="6" y2="6"></line><line x1="3" x2="3.01" y1="12" y2="12"></line><line x1="3" x2="3.01" y1="18" y2="18"></line></svg>`;
+
+            isMapViewActive = !isMapViewActive; // Toggle state
+
+            if (isMapViewActive) {
+                // Switch to Full Map View
+                sidebar.classList.add('-translate-x-full');
+                mapContainer.classList.remove('h-1/6');
+                mapContainer.classList.add('h-full');
+                viewToggleButton.innerHTML = listIconSVG;
+            } else {
+                // Switch back to List View
+                sidebar.classList.remove('-translate-x-full');
+                mapContainer.classList.remove('h-full');
+                mapContainer.classList.add('h-1/6');
+                viewToggleButton.innerHTML = mapIconSVG;
             }
         }
 
