@@ -264,17 +264,16 @@
         let directionsService;
         let directionsRenderer;
         let geocoder;
-        // *** KEY UPDATED ***
         const GEMINI_API_KEY = 'AIzaSyCR9eO8hbW1x8RCpejMCEh1e_dfBCteaYM';
         let sortedSelectedLocations = [];
         const visitedPandals = new Set();
-        let isMapViewActive = false; // New state for FAB toggle
+        let isMapViewActive = false; 
 
         // --- INITIALIZATION & UI SETUP ---
         window.initMap = function() {
             map = new google.maps.Map(document.getElementById('map'), {
-                center: { lat: 22.5726, lng: 88.3639 },
-                zoom: 12,
+                center: { lat: 22.5726, lng: 88.3639 }, // Default center on Kolkata
+                zoom: 11,
                 mapTypeControl: false,
                 streetViewControl: false,
             });
@@ -282,7 +281,7 @@
             directionsRenderer = new google.maps.DirectionsRenderer({ map: map, suppressMarkers: true });
             geocoder = new google.maps.Geocoder();
            
-            populateLocationList(); // Initial population with default order
+            populateLocationList(); 
             getUserLocation();
             setupEventListeners();
             renderSavedPlans();
@@ -309,15 +308,13 @@
             document.getElementById('copy-share-btn').addEventListener('click', copyShareLink);
             document.getElementById('search-input').addEventListener('keyup', filterPandals);
             document.getElementById('clear-all-btn').addEventListener('click', clearAllSelections);
-            document.getElementById('view-toggle-btn').addEventListener('click', toggleMobileView); // Listener for the new FAB
+            document.getElementById('view-toggle-btn').addEventListener('click', toggleMobileView); 
         }
        
-        // --- Populate location list function with collapsible sections ---
         function populateLocationList(sortedData = null) {
             const listContainer = document.getElementById('location-list');
-            listContainer.innerHTML = ''; // Clear previous list
+            listContainer.innerHTML = ''; 
 
-            // If no sorted data is provided, use the default order
             if (!sortedData) {
                 const categories = {};
                 locations.forEach((location, index) => {
@@ -401,14 +398,18 @@
             });
         }
 
-
-        // --- CORE LOGIC ---
+        // --- MODIFIED FUNCTION ---
         function getUserLocation() {
             const statusText = document.getElementById('status-text');
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         userLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
+                        
+                        // Center the map on the user's location as soon as it's found
+                        map.setCenter(userLocation);
+                        map.setZoom(13); // A closer zoom for a "nearby" view
+
                         statusText.parentElement.classList.replace('bg-blue-100', 'bg-green-100');
                         statusText.parentElement.classList.replace('text-blue-800', 'text-green-800');
                         statusText.textContent = "Location found! Sorting pandals by distance...";
@@ -422,7 +423,7 @@
                                     cb.disabled = false;
                                 }
                             });
-                            loadPersistedState(); // Load saved selections and visited status
+                            loadPersistedState();
                             loadPlanFromUrl();
                         });
                     },
@@ -433,8 +434,14 @@
             }
         }
 
+        // --- MODIFIED FUNCTION ---
         function setManualLocation() {
             userLocation = { lat: 22.5679, lng: 88.3526 }; // Esplanade, Kolkata
+            
+            // Center the map on the manually set location
+            map.setCenter(userLocation);
+            map.setZoom(13);
+
             const statusText = document.getElementById('status-text');
             statusText.parentElement.classList.replace('bg-blue-100', 'bg-green-100');
             statusText.parentElement.classList.replace('text-blue-800', 'text-green-800');
@@ -448,7 +455,7 @@
                         cb.disabled = false;
                     }
                 });
-                loadPersistedState(); // Load saved selections and visited status
+                loadPersistedState(); 
                 loadPlanFromUrl();
             });
         }
@@ -459,7 +466,6 @@
             const statusText = document.getElementById('status-text');
             statusText.textContent = "Calculating distances and sorting pandals...";
 
-            // 1. Geocode all locations if they don't have lat/lng already
             const geocodePromises = locations.map((location, index) => {
                 return new Promise((resolve) => {
                     if (location.lat && location.lng) {
@@ -477,7 +483,7 @@
                             resolve({ ...locations[index], originalIndex: index });
                         } else {
                             console.warn(`Geocode failed for "${location.name}": ${status}`);
-                            resolve(null); // Resolve with null on failure
+                            resolve(null);
                         }
                     });
                 });
@@ -486,7 +492,6 @@
             const geocodedResults = await Promise.all(geocodePromises);
             const validLocations = geocodedResults.filter(loc => loc && loc.lat);
 
-            // 2. Calculate distance for each pandal and group by category
             const categories = {};
             validLocations.forEach(location => {
                 const category = location.category || "Uncategorized";
@@ -505,7 +510,6 @@
                 categories[category].totalLng += location.lng;
             });
 
-            // 3. Calculate category center and sort categories
             const sortedCategories = Object.keys(categories).map(categoryName => {
                 const categoryData = categories[categoryName];
                 const count = categoryData.pandals.length;
@@ -523,16 +527,13 @@
 
             sortedCategories.sort((a, b) => a.distance - b.distance);
            
-            // 4. Repopulate the list with sorted data
             populateLocationList(sortedCategories);
         }
-
 
         async function updateMapAndList() {
             if (!userLocation) return;
             const selectedIndices = Array.from(document.querySelectorAll('#location-list input:checked')).map(cb => cb.value);
            
-            // --- PERSISTENCE: SAVE SELECTION STATE ---
             localStorage.setItem('pandalHopperSelected', JSON.stringify(selectedIndices));
 
             const planButton = document.getElementById('plan-generator-btn');
@@ -575,9 +576,15 @@
             saveButton.disabled = selectedIndices.length === 0;
             themeButton.disabled = selectedIndices.length === 0;
 
-
             if (selectedIndices.length === 0) {
                 clearMarkers();
+                // When selection is cleared, re-center on the user's location
+                if (userLocation) {
+                    map.setCenter(userLocation);
+                    map.setZoom(13);
+                    const userMarker = new google.maps.Marker({ position: userLocation, map: map, title: 'Your Location', icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: "#4285F4", fillOpacity: 1, strokeColor: "white", strokeWeight: 2 }});
+                    markers.push(userMarker);
+                }
                 if(directionsRenderer) directionsRenderer.setDirections({ routes: [] });
                 document.getElementById('navigation-container').classList.add('hidden');
                 return;
@@ -642,7 +649,6 @@
                         doneBtn.classList.add('bg-green-200');
                     }
                    
-                    // --- PERSISTENCE: SAVE VISITED STATE ---
                     localStorage.setItem('pandalHopperVisited', JSON.stringify(Array.from(visitedPandals)));
 
                     displaySortedLocationsOnMap(sortedSelectedLocations);
@@ -658,19 +664,23 @@
         function displaySortedLocationsOnMap(sortedLocations) {
             clearMarkers();
             directionsRenderer.setDirections({ routes: [] });
-            const bounds = new google.maps.LatLngBounds();
 
-            const userMarker = new google.maps.Marker({
-                position: userLocation, map: map, title: 'Your Location',
-                icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: "#4285F4", fillOpacity: 1, strokeColor: "white", strokeWeight: 2 }
-            });
-            markers.push(userMarker);
-            bounds.extend(userLocation);
+            if (userLocation) {
+                const userMarker = new google.maps.Marker({
+                    position: userLocation,
+                    map: map,
+                    title: 'Your Location',
+                    icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: "#4285F4", fillOpacity: 1, strokeColor: "white", strokeWeight: 2 }
+                });
+                markers.push(userMarker);
+            }
+
+            const bounds = new google.maps.LatLngBounds();
 
             sortedLocations.forEach((location, index) => {
                 const isVisited = visitedPandals.has(location.originalIndex.toString());
                 const marker = new google.maps.Marker({
-                    position: { lat: location.lat, lng: location.lng }, 
+                    position: { lat: location.lat, lng: location.lng },
                     map: map,
                     label: {
                         text: `${index + 1}. ${location.shortName}`,
@@ -691,7 +701,14 @@
                 bounds.extend(marker.getPosition());
             });
 
-            map.fitBounds(bounds);
+            if (!bounds.isEmpty()) {
+                if (sortedLocations.length === 1) {
+                    map.setCenter(bounds.getCenter());
+                    map.setZoom(15);
+                } else {
+                    map.fitBounds(bounds, 50); 
+                }
+            }
 
             if (sortedLocations.length > 0) {
                 const origin = new google.maps.LatLng(userLocation.lat, userLocation.lng);
@@ -708,7 +725,6 @@
             }
         }
        
-        // --- GEMINI API INTEGRATION ---
         async function getThemeDetails() {
             if (sortedSelectedLocations.length === 0) return;
             const prompt = `You are an expert guide for Kolkata's Durga Puja. A user wants to know the theme for the following pandals: ${sortedSelectedLocations.map(p => p.name).join(', ')}.
@@ -731,7 +747,6 @@ Your response must be in both English and Bengali.
             await callGeminiAPI("🎨 Pandal Theme Details", prompt);
         }
 
-
         const generateHoppingPlan = async () => {
             if (sortedSelectedLocations.length < 1 || sortedSelectedLocations.length > 6) return;
 
@@ -739,7 +754,7 @@ Your response must be in both English and Bengali.
             const pandalListString = sortedSelectedLocations.map((p, i) => `${i + 1}. ${p.name}`).join('\n');
 
             const prompt = `
-You are an expert local travel planner for Kolkata's Durga Puja. A user wants a detailed itinerary to visit the following pandals in a specific, pre-sorted order. The user's journey starts from their current location. The current date is September 22, 2025, during the Durga Puja festival.
+You are an expert local travel planner for Kolkata's Durga Puja. A user wants a detailed itinerary to visit the following pandals in a specific, pre-sorted order. The user's journey starts from their current location. The current date is September 24, 2025, during the Durga Puja festival.
 
 **User's Starting Location:** The user is starting their journey from the GPS coordinates: ${userLocation.lat}, ${userLocation.lng}.
 
@@ -852,8 +867,6 @@ Create a detailed, step-by-step itinerary.
             }
         }
 
-
-        // --- SAVE/LOAD/SHARE PLAN LOGIC ---
         function showSavePlanModal() {
             const selectedIndices = Array.from(document.querySelectorAll('#location-list input:checked')).map(cb => cb.value);
             if (selectedIndices.length === 0) {
@@ -1016,23 +1029,19 @@ Create a detailed, step-by-step itinerary.
             });
             visitedPandals.clear();
            
-            // --- PERSISTENCE: CLEAR SAVED STATE ---
             localStorage.removeItem('pandalHopperSelected');
             localStorage.removeItem('pandalHopperVisited');
            
             updateMapAndList();
         }
 
-        // --- NEW --- PERSISTENCE LOGIC
         function loadPersistedState() {
-            // Load visited pandals
             const storedVisited = localStorage.getItem('pandalHopperVisited');
             if (storedVisited) {
                 const visitedIndices = JSON.parse(storedVisited);
                 visitedIndices.forEach(index => visitedPandals.add(index.toString()));
             }
 
-            // Load selected pandals
             const storedSelected = localStorage.getItem('pandalHopperSelected');
             if (storedSelected) {
                 const selectedIndices = JSON.parse(storedSelected);
@@ -1043,14 +1052,11 @@ Create a detailed, step-by-step itinerary.
                             checkbox.checked = true;
                         }
                     });
-                    // Trigger a UI update to reflect the loaded state
                     updateMapAndList();
                 }
             }
         }
 
-
-        // --- UTILITY & ERROR HANDLING ---
         function setupNavigationButton(sortedLocations) {
             const navContainer = document.getElementById('navigation-container');
             const navButton = document.getElementById('start-navigation-btn');
@@ -1124,7 +1130,6 @@ Create a detailed, step-by-step itinerary.
             }
         }
 
-        // --- NEW --- Mobile View Toggle Function
         function toggleMobileView() {
             const sidebar = document.getElementById('sidebar');
             const mapContainer = document.getElementById('map-container');
@@ -1133,18 +1138,14 @@ Create a detailed, step-by-step itinerary.
             const mapIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>`;
             const listIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" x2="21" y1="6" y2="6"></line><line x1="8" x2="21" y1="12" y2="12"></line><line x1="8" x2="21" y1="18" y2="18"></line><line x1="3" x2="3.01" y1="6" y2="6"></line><line x1="3" x2="3.01" y1="12" y2="12"></line><line x1="3" x2="3.01" y1="18" y2="18"></line></svg>`;
 
-            isMapViewActive = !isMapViewActive; // Toggle state
+            isMapViewActive = !isMapViewActive; 
 
-            // Toggle visibility of the main panels
             sidebar.classList.toggle('hidden');
             mapContainer.classList.toggle('hidden');
 
-            // Update button icon based on the new active view
             if (isMapViewActive) {
-                // Now showing the Map
                 viewToggleButton.innerHTML = listIconSVG;
             } else {
-                // Now showing the List
                 viewToggleButton.innerHTML = mapIconSVG;
             }
         }
