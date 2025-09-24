@@ -35,6 +35,11 @@
             font-weight: bold !important;
             color: black !important; 
         }
+        /* Style for the draggable button container */
+        #floating-buttons-container {
+            cursor: move;
+            touch-action: none; /* Prevents scrolling on touch devices */
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -53,17 +58,17 @@
                     <p id="status-text">Getting your location...</p>
                     <button id="manual-location-btn" class="text-xs text-indigo-600 hover:underline mt-1 font-medium">Wrong location? Set manually</button>
                 </div>
-               
+                
                 <div class="grid grid-cols-3 gap-2 mt-4">
-                        <button id="theme-details-btn" disabled class="w-full bg-blue-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-blue-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
-                            🎨 Theme
-                        </button>
-                        <button id="plan-generator-btn" disabled class="w-full bg-purple-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-purple-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
-                            ✨ Plan
-                        </button>
-                        <button id="save-plan-btn" disabled class="w-full bg-green-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-green-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
-                            💾 Save
-                        </button>
+                            <button id="theme-details-btn" disabled class="w-full bg-blue-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-blue-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
+                                🎨 Theme
+                            </button>
+                            <button id="plan-generator-btn" disabled class="w-full bg-purple-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-purple-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
+                                ✨ Plan
+                            </button>
+                            <button id="save-plan-btn" disabled class="w-full bg-green-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-green-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
+                                💾 Save
+                            </button>
                 </div>
                 <p id="plan-helper-text" class="text-xs text-center text-gray-500 mt-1">(Select 1 to 6 pandals for a plan)</p>
 
@@ -73,7 +78,7 @@
                         Navigate in Google Maps
                     </button>
                 </div>
-               
+                
                 <div class="mt-4 border-t pt-2">
                     <details>
                         <summary class="font-semibold cursor-pointer text-gray-700">Saved Plans</summary>
@@ -85,16 +90,16 @@
                 <h2 class="text-lg font-semibold my-3 border-t pt-3">Select Pandals:</h2>
                 <p class="text-xs text-gray-500 italic mb-2">* <strong class="text-indigo-600">Bolded</strong> pandals are must-watch locations.</p>
                 <div class="mb-3">
-                        <div class="relative">
-                            <input type="search" id="search-input" placeholder="Search for a pandal..." class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-                            <svg class="absolute left-2 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </div>
-                        <button id="clear-all-btn" class="w-full mt-2 bg-red-500 text-white font-bold py-2 px-2 rounded-lg hover:bg-red-600 transition-colors shadow-md text-sm">Clear Selections</button>
+                            <div class="relative">
+                                <input type="search" id="search-input" placeholder="Search for a pandal..." class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                                <svg class="absolute left-2 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                            <button id="clear-all-btn" class="w-full mt-2 bg-red-500 text-white font-bold py-2 px-2 rounded-lg hover:bg-red-600 transition-colors shadow-md text-sm">Clear Selections</button>
                 </div>
             </div>
-           
+            
             <div id="location-list" class="flex-grow overflow-y-auto custom-scrollbar pr-2">
             </div>
             <div class="mt-auto pt-4 text-center text-sm text-gray-500">
@@ -107,9 +112,14 @@
         </div>
     </div>
 
-    <button id="view-toggle-btn" class="md:hidden fixed bottom-4 right-4 z-40 bg-indigo-600 text-white rounded-full p-4 shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform transform hover:scale-110">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-    </button>
+    <div id="floating-buttons-container" class="md:hidden fixed bottom-4 right-4 z-40 flex flex-col items-center gap-3">
+        <button id="weather-forecast-btn" disabled class="bg-blue-500 text-white rounded-full p-4 shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-transform transform hover:scale-110 disabled:bg-gray-400 disabled:cursor-not-allowed">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+        </button>
+        <button id="view-toggle-btn" class="bg-indigo-600 text-white rounded-full p-4 shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform transform hover:scale-110">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        </button>
+    </div>
 
     <div id="generic-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
         <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-2/3 lg:w-1/2 p-6 relative">
@@ -206,7 +216,7 @@
             { name: "Hindusthan Park Sarbojanin Durgotsab Committee", shortName: "Hindusthan Pk", category: "South Kolkata" },
             { name: "Singhi Park Sarbojanin Durga Puja Committee", shortName: "Singhi Park", category: "South Kolkata" },
             { name: "Ekdalia Evergreen Club", shortName: "Ekdalia", category: "South Kolkata" },
-           
+            
             // Jadavpur
             { name: "Jodhpur Park Durga Puja", shortName: "Jodhpur Park", category: "Jadavpur" },
             { name: "Naktala Udayan Sangha", shortName: "Naktala Udayan", category: "Jadavpur" },
@@ -220,13 +230,13 @@
             { name: "Bosepukur Sitala Madir", shortName: "Bosepukur", category: "Jadavpur" },
             { name: "Pally Mangal Samity Sarbojanin", shortName: "Pally Mangal", category: "Jadavpur" },
             { name: "Rajdanga Naba Uday Sangha", shortName: "Rajdanga", category: "Jadavpur", mustWatch: true },
-           
+            
             // Haridevpur
             { name: "Haridevpur 41 Pally Club", shortName: "Haridevpur 41", category: "Haridevpur" },
             { name: "Ajeya Sanghati Club", shortName: "Ajeya Sanghati", category: "Haridevpur" },
             { name: "Vivekananda Park Athletic Club Durga Puja Ground", shortName: "Vivekananda", category: "Haridevpur" },
             { name: "Pally Unnayan Samity", shortName: "Pally Unnayan", category: "Haridevpur" },
-           
+            
             // Salt Lake & Rajarhat
             { name: "Saltlake AK block", shortName: "AK Block", category: "Salt Lake & Rajarhat" },
             { name: "Saltlake IB Block Durga Puja", shortName: "IB Block", category: "Salt Lake & Rajarhat" },
@@ -239,7 +249,7 @@
             { name: "Wellington Nagarik Kalyan Samity", shortName: "Wellington", category: "Central Kolkata" },
             { name: "Kankurgachi Jubak Brinda", shortName: "Kankurgachi", category: "Central Kolkata" },
             { name: "Beliaghata 33 Pally", shortName: "Beliaghata 33", category: "Central Kolkata" },
-           
+            
             // West Kolkata & Behala
             { name: "Barisha Club Puja Ground and Community Hall", shortName: "Barisha Club", category: "West Kolkata & Behala" },
             { name: "Barisha Sarbojonin", shortName: "Barisha", category: "West Kolkata & Behala" },
@@ -247,7 +257,7 @@
             { name: "Behala Friends' Club", shortName: "Behala Friends", category: "West Kolkata & Behala" },
             { name: "Debdaru Fatak Sarbojanin Durgotsav", shortName: "Debdaru Fatak", category: "West Kolkata & Behala" },
             { name: "Thakurpukur State Bank Park", shortName: "SB Park", category: "West Kolkata & Behala" },
-           
+            
             // Kidderpore
             { name: "Khidirpur 25 Palli Durga Puja", shortName: "Khidirpur 25", category: "Kidderpore" },
             { name: "Khidderpur Sarbojanin Durgotsab", shortName: "Khidderpur Sarbojanin", category: "Kidderpore" },
@@ -280,7 +290,7 @@
             directionsService = new google.maps.DirectionsService();
             directionsRenderer = new google.maps.DirectionsRenderer({ map: map, suppressMarkers: true });
             geocoder = new google.maps.Geocoder();
-           
+            
             populateLocationList(); 
             getUserLocation();
             setupEventListeners();
@@ -309,8 +319,11 @@
             document.getElementById('search-input').addEventListener('keyup', filterPandals);
             document.getElementById('clear-all-btn').addEventListener('click', clearAllSelections);
             document.getElementById('view-toggle-btn').addEventListener('click', toggleMobileView); 
+            document.getElementById('weather-forecast-btn').addEventListener('click', getWeatherForecast);
+            
+            makeDraggable(document.getElementById('floating-buttons-container'));
         }
-       
+        
         function populateLocationList(sortedData = null) {
             const listContainer = document.getElementById('location-list');
             listContainer.innerHTML = ''; 
@@ -325,7 +338,7 @@
                     categories[category].push({ ...location, originalIndex: index });
                 });
                 const categoryOrder = ["North Kolkata", "Lake Town / Ultadanga", "Dum Dum", "South Kolkata", "Jadavpur", "Haridevpur", "Salt Lake & Rajarhat", "Central Kolkata", "West Kolkata & Behala", "Kidderpore", "Asian Paints Sharad Shamman Shortlisted"];
-               
+                
                 sortedData = categoryOrder.map(name => {
                     return {
                         name: name,
@@ -333,7 +346,7 @@
                     }
                 }).filter(cat => cat.pandals.length > 0);
             }
-           
+            
             sortedData.forEach((categoryData, catIndex) => {
                 const categoryName = categoryData.name;
                 const locationsInCategory = categoryData.pandals;
@@ -341,7 +354,7 @@
                 if (locationsInCategory && locationsInCategory.length > 0) {
                     const detailsEl = document.createElement('details');
                     detailsEl.open = userLocation ? (catIndex === 0) : true;
-                   
+                    
                     const summaryEl = document.createElement('summary');
                     summaryEl.className = 'text-md font-semibold text-gray-700 cursor-pointer py-2 hover:bg-gray-100 rounded';
                     summaryEl.textContent = categoryName;
@@ -354,7 +367,7 @@
                         const index = location.originalIndex;
                         const itemDiv = document.createElement('div');
                         itemDiv.className = 'flex items-center justify-between p-2 rounded-md hover:bg-gray-100 transition-colors';
-                       
+                        
                         const leftDiv = document.createElement('div');
                         leftDiv.className = 'flex items-center';
 
@@ -368,10 +381,10 @@
                             checkbox.disabled = true;
                         }
                         checkbox.addEventListener('change', updateMapAndList);
-                       
+                        
                         const label = document.createElement('label');
                         label.htmlFor = `loc-${index}`;
-                       
+                        
                         let labelHTML = '';
                         if(location.mustWatch){
                             labelHTML += `* <strong class="text-indigo-600">${location.name}</strong>`;
@@ -382,7 +395,7 @@
                         if (location.distance !== undefined) {
                             labelHTML += ` <span class="text-xs text-gray-500 font-medium">(${location.distance.toFixed(1)} km)</span>`;
                         }
-                       
+                        
                         label.innerHTML = labelHTML;
                         label.className = 'ml-3 text-sm text-gray-700';
 
@@ -411,9 +424,10 @@
                         statusText.parentElement.classList.replace('bg-blue-100', 'bg-green-100');
                         statusText.parentElement.classList.replace('text-blue-800', 'text-green-800');
                         statusText.textContent = "Location found! Sorting pandals by distance...";
-                       
+                        
                         document.getElementById('manual-location-btn').style.display = 'none';
-                       
+                        document.getElementById('weather-forecast-btn').disabled = false;
+                        
                         sortAndDisplayPandalsByDistance().then(() => {
                             statusText.textContent = "Pandals sorted by proximity. Please select.";
                             document.querySelectorAll('#location-list input[type="checkbox"]').forEach(cb => {
@@ -443,6 +457,7 @@
             statusText.parentElement.classList.replace('text-blue-800', 'text-green-800');
             statusText.textContent = "Location set to Esplanade. Sorting pandals...";
             document.getElementById('manual-location-btn').style.display = 'none';
+            document.getElementById('weather-forecast-btn').disabled = false;
 
             sortAndDisplayPandalsByDistance().then(() => {
                 statusText.textContent = "Pandals sorted by proximity. Please select.";
@@ -455,7 +470,7 @@
                 loadPlanFromUrl();
             });
         }
-       
+        
         async function sortAndDisplayPandalsByDistance() {
             if (!userLocation) return;
 
@@ -515,21 +530,21 @@
                 } else {
                     categoryData.distance = Infinity;
                 }
-               
+                
                 categoryData.pandals.sort((a, b) => a.distance - b.distance);
 
                 return { name: categoryName, ...categoryData };
             });
 
             sortedCategories.sort((a, b) => a.distance - b.distance);
-           
+            
             populateLocationList(sortedCategories);
         }
 
         async function updateMapAndList() {
             if (!userLocation) return;
             const selectedIndices = Array.from(document.querySelectorAll('#location-list input:checked')).map(cb => cb.value);
-           
+            
             localStorage.setItem('pandalHopperSelected', JSON.stringify(selectedIndices));
 
             const planButton = document.getElementById('plan-generator-btn');
@@ -598,7 +613,7 @@
             }
 
             statusText.textContent = "Updating map with selected pandals...";
-           
+            
             sortedSelectedLocations.forEach((location, index) => {
                 const itemDiv = document.getElementById(`loc-${location.originalIndex}`).parentElement.parentElement;
                 const label = itemDiv.querySelector('label');
@@ -618,7 +633,7 @@
                 const doneBtn = document.createElement('button');
                 doneBtn.textContent = 'Done';
                 doneBtn.className = 'done-btn text-xs bg-gray-200 px-2 py-1 rounded hover:bg-gray-300';
-               
+                
                 if (visitedPandals.has(location.originalIndex.toString())) {
                     label.classList.add('line-through', 'text-gray-400');
                     doneBtn.classList.add('bg-green-200');
@@ -634,13 +649,12 @@
                         label.classList.add('line-through', 'text-gray-400');
                         doneBtn.classList.add('bg-green-200');
                     }
-                   
+                    
                     localStorage.setItem('pandalHopperVisited', JSON.stringify(Array.from(visitedPandals)));
 
                     displaySortedLocationsOnMap(sortedSelectedLocations);
                 };
 
-                // Avoid adding duplicate 'Done' buttons
                 if (!itemDiv.querySelector('.done-btn')) {
                     itemDiv.appendChild(doneBtn);
                 }
@@ -664,8 +678,9 @@
                     icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: "#4285F4", fillOpacity: 1, strokeColor: "white", strokeWeight: 2 }
                 });
                 markers.push(userMarker);
-                // MODIFIED: Include user's location in the map's view
-                bounds.extend(userLocation);
+                if (sortedLocations.length > 0) {
+                    bounds.extend(userLocation);
+                }
             }
 
             sortedLocations.forEach((location, index) => {
@@ -673,10 +688,7 @@
                 const marker = new google.maps.Marker({
                     position: { lat: location.lat, lng: location.lng },
                     map: map,
-                    label: {
-                        text: `${index + 1}. ${location.shortName}`,
-                        className: 'gmaps-marker-label'
-                    },
+                    label: { text: `${index + 1}. ${location.shortName}`, className: 'gmaps-marker-label' },
                     icon: isVisited ? { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: 'grey', fillOpacity: 0.8, strokeWeight: 0 } : null,
                     title: `${index + 1}. ${location.name}`
                 });
@@ -689,11 +701,9 @@
             const mapContainer = document.getElementById('map-container');
             if (!mapContainer.classList.contains('hidden')) {
                 if (!bounds.isEmpty()) {
-                    // Having more than one point (e.g., user + one pandal) is enough to fit bounds
                     if (markers.length > 1) {
-                         map.fitBounds(bounds, 50); // Add some padding
+                         map.fitBounds(bounds, 50);
                     } else {
-                        // If only one marker (just the user), center on it
                         map.setCenter(bounds.getCenter());
                         map.setZoom(13);
                     }
@@ -714,7 +724,29 @@
                 });
             }
         }
-       
+        
+        async function getWeatherForecast() {
+            if (!userLocation) {
+                alert("Please enable your location to get a weather forecast.");
+                return;
+            }
+            
+            const prompt = `You are a helpful weather assistant. The user is in Kolkata, India. The current date is September 24, 2025. Based on the user's location at latitude ${userLocation.lat} and longitude ${userLocation.lng}, provide an hourly weather forecast for the next 12 hours.
+
+Your response must be a single HTML \`<div>\` container. Inside this div, for each of the next 12 hours, create a child \`<div>\` with the following structure:
+- It must have the classes: 'flex items-center justify-between p-2 border-b'
+- Inside, include these elements in order:
+  1. A \`<span>\` with the time (e.g., "7:00 PM").
+  2. A \`<span>\` with an appropriate weather emoji (e.g., "☁️").
+  3. A \`<span>\` with a brief weather description (e.g., "Partly Cloudy").
+  4. A \`<span>\` containing a water drop emoji (💧) and the percentage chance of rain (e.g., "💧 15%"). This span should have the class 'text-blue-500 text-sm'.
+  5. A \`<strong>\` tag with the temperature in Celsius (e.g., "29°C").
+
+Do not include any introduction, conclusion, or any other text outside of the main \`<div>\` container.`;
+
+            await callGeminiAPI("☁️ 12-Hour Forecast", prompt);
+        }
+
         async function getThemeDetails() {
             if (sortedSelectedLocations.length === 0) return;
             const prompt = `You are an expert guide for Kolkata's Durga Puja. A user wants to know the theme for the following pandals: ${sortedSelectedLocations.map(p => p.name).join(', ')}.
@@ -733,7 +765,7 @@ Your response must be in both English and Bengali.
   - Bengali Theme: [The theme in Bengali]
 - If no theme information for 2025 is found for a pandal after searching, you must state "Theme for 2025 has not been announced yet." in English, and "२०২৫ সালের থিম এখনও ঘোষণা করা হয়নি।" in Bengali.
 - Do not include any information about previous years.`;
-           
+            
             await callGeminiAPI("🎨 Pandal Theme Details", prompt);
         }
 
@@ -784,7 +816,7 @@ Create a detailed, step-by-step itinerary.
     <p class="font-bold">Total Estimated Trip Time: [Your calculation here]</p>
 </div>
 `;
-           
+            
             await callGeminiAPI("✨ Your Pandal Hopping Plan", prompt);
         }
 
@@ -793,7 +825,7 @@ Create a detailed, step-by-step itinerary.
             const loader = document.getElementById('modal-loader');
             const modalText = document.getElementById('modal-text');
             const modalTitle = document.getElementById('modal-title');
-           
+            
             modalTitle.textContent = title;
             modal.classList.remove('hidden');
             loader.style.display = 'flex';
@@ -805,8 +837,8 @@ Create a detailed, step-by-step itinerary.
                 return;
             }
 
-      
-	    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
+            
+const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
             const payload = {
                 contents: [{ parts: [{ text: prompt }] }],
                 tools: [{ "google_search": {} }]
@@ -826,7 +858,7 @@ Create a detailed, step-by-step itinerary.
                     if (response.ok) {
                         const result = await response.json();
                         const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                       
+                        
                         if (text) {
                             modalText.innerHTML = text;
                         } else if (result.candidates && result.candidates[0].finishReason === 'SAFETY') {
@@ -876,7 +908,7 @@ Create a detailed, step-by-step itinerary.
             }
 
             const selectedIndices = Array.from(document.querySelectorAll('#location-list input:checked')).map(cb => cb.value);
-           
+            
             const plans = JSON.parse(localStorage.getItem('pandalPlans')) || [];
             const newPlan = {
                 name: planName,
@@ -886,7 +918,7 @@ Create a detailed, step-by-step itinerary.
             };
             plans.push(newPlan);
             localStorage.setItem('pandalPlans', JSON.stringify(plans));
-           
+            
             renderSavedPlans();
             document.getElementById('save-plan-modal').classList.add('hidden');
         }
@@ -904,7 +936,7 @@ Create a detailed, step-by-step itinerary.
             plans.forEach((plan, index) => {
                 const planEl = document.createElement('div');
                 planEl.className = 'p-2 border rounded-md bg-gray-50';
-               
+                
                 planEl.innerHTML = `
                     <div class="flex justify-between items-start">
                         <div>
@@ -922,7 +954,7 @@ Create a detailed, step-by-step itinerary.
                 planEl.querySelector('.share-plan-btn').addEventListener('click', () => sharePlan(index));
                 planEl.querySelector('.load-plan-btn').addEventListener('click', () => loadPlan(index));
                 planEl.querySelector('.delete-plan-btn').addEventListener('click', (event) => deletePlan(index, event));
-               
+                
                 listContainer.appendChild(planEl);
             });
         }
@@ -933,7 +965,7 @@ Create a detailed, step-by-step itinerary.
             if (!plan) return;
 
             document.querySelectorAll('#location-list input:checked').forEach(cb => cb.checked = false);
-           
+            
             visitedPandals.clear();
             if (plan.visited) {
                 plan.visited.forEach(i => visitedPandals.add(i));
@@ -966,18 +998,18 @@ Create a detailed, step-by-step itinerary.
                 renderSavedPlans();
             }
         }
-       
+        
         function sharePlan(index) {
             const plans = JSON.parse(localStorage.getItem('pandalPlans')) || [];
             const plan = plans[index];
             if (!plan) return;
-           
+            
             const baseUrl = window.location.href.split('?')[0];
             const shareUrl = `${baseUrl}?plan=${plan.indices.join(',')}`;
-           
+            
             const shareInput = document.getElementById('share-link-input');
             shareInput.value = shareUrl;
-           
+            
             document.getElementById('share-plan-modal').classList.remove('hidden');
         }
 
@@ -996,7 +1028,7 @@ Create a detailed, step-by-step itinerary.
                 console.error('Failed to copy: ', err);
             }
         }
-       
+        
         function loadPlanFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
             const planIndices = urlParams.get('plan');
@@ -1019,10 +1051,10 @@ Create a detailed, step-by-step itinerary.
                 cb.checked = false;
             });
             visitedPandals.clear();
-           
+            
             localStorage.removeItem('pandalHopperSelected');
             localStorage.removeItem('pandalHopperVisited');
-           
+            
             updateMapAndList();
         }
 
@@ -1080,11 +1112,11 @@ Create a detailed, step-by-step itinerary.
             const manualBtn = document.getElementById('manual-location-btn');
             manualBtn.className = "mt-2 font-bold text-indigo-700 underline";
         }
-       
+        
         function handleDirectionsError(status) {
             console.warn("Directions request failed due to " + status);
         }
-       
+        
         function getDistance(pos1, pos2) {
             const R = 6371;
             const dLat = (pos2.lat - pos1.lat) * Math.PI / 180;
@@ -1156,6 +1188,110 @@ Create a detailed, step-by-step itinerary.
             } else {
                 viewToggleButton.innerHTML = mapIconSVG;
             }
+        }
+
+        // --- DRAGGABLE FUNCTIONALITY (CORRECTED) ---
+        function makeDraggable(element) {
+            let isDown = false;
+            let hasDragged = false;
+            let offset = [0, 0];
+
+            // Mouse Events
+            element.addEventListener('mousedown', (e) => {
+                isDown = true;
+                hasDragged = false;
+                offset = [
+                    element.offsetLeft - e.clientX,
+                    element.offsetTop - e.clientY
+                ];
+                element.style.cursor = 'grabbing';
+            }, true);
+
+            document.addEventListener('mouseup', (e) => {
+                if (isDown) { // Only act if dragging was initiated on our element
+                    isDown = false;
+                    element.style.cursor = 'move';
+                    if (hasDragged) {
+                        // This prevents the click event from firing at the end of a drag
+                        e.stopPropagation();
+                    }
+                }
+            }, true); // Use capturing to catch the event early
+
+            document.addEventListener('mousemove', (e) => {
+                if (isDown) {
+                    hasDragged = true;
+                    e.preventDefault();
+                    
+                    let newLeft = e.clientX + offset[0];
+                    let newTop = e.clientY + offset[1];
+
+                    // Boundary checks
+                    const viewportWidth = window.innerWidth;
+                    const viewportHeight = window.innerHeight;
+                    const elemWidth = element.offsetWidth;
+                    const elemHeight = element.offsetHeight;
+
+                    if (newTop < 0) newTop = 0;
+                    if (newLeft < 0) newLeft = 0;
+                    if (newTop + elemHeight > viewportHeight) newTop = viewportHeight - elemHeight;
+                    if (newLeft + elemWidth > viewportWidth) newLeft = viewportWidth - elemWidth;
+
+                    element.style.left = newLeft + 'px';
+                    element.style.top = newTop + 'px';
+                    element.style.right = 'auto';
+                    element.style.bottom = 'auto';
+                }
+            }, true);
+
+            // Touch Events
+            element.addEventListener('touchstart', (e) => {
+                isDown = true;
+                hasDragged = false;
+                const touch = e.touches[0];
+                offset = [
+                    element.offsetLeft - touch.clientX,
+                    element.offsetTop - touch.clientY
+                ];
+            }, true);
+
+            document.addEventListener('touchend', (e) => {
+                if (isDown) {
+                    isDown = false;
+                    if (hasDragged) {
+                        // Prevent click and other actions after a drag on touch devices
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                }
+            }, true);
+
+            document.addEventListener('touchmove', (e) => {
+                if (isDown) {
+                    hasDragged = true;
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    
+                    let newLeft = touch.clientX + offset[0];
+                    let newTop = touch.clientY + offset[1];
+
+                    // Boundary checks
+                    const viewportWidth = window.innerWidth;
+                    const viewportHeight = window.innerHeight;
+                    const elemWidth = element.offsetWidth;
+                    const elemHeight = element.offsetHeight;
+
+                    if (newTop < 0) newTop = 0;
+                    if (newLeft < 0) newLeft = 0;
+                    if (newTop + elemHeight > viewportHeight) newTop = viewportHeight - elemHeight;
+                    if (newLeft + elemWidth > viewportWidth) newLeft = viewportWidth - elemWidth;
+
+                    element.style.left = newLeft + 'px';
+                    element.style.top = newTop + 'px';
+                    element.style.right = 'auto';
+                    element.style.bottom = 'auto';
+                }
+            }, true);
         }
 
     </script>
