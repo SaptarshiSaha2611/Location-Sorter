@@ -6,6 +6,7 @@
     <title>Durga Puja Pandal Hopper</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -43,6 +44,8 @@
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
+
+    <input type="text" id="date-picker" style="display: none;">
 
     <div id="main-container" class="flex flex-col md:flex-row h-screen max-h-screen relative overflow-hidden">
         <div id="sidebar" class="w-full md:w-2/5 p-2 md:p-4 bg-white shadow-lg flex flex-col h-screen z-30 md:relative">
@@ -90,13 +93,13 @@
                 <h2 class="text-lg font-semibold my-3 border-t pt-3">Select Pandals:</h2>
                 <p class="text-xs text-gray-500 italic mb-2">* <strong class="text-indigo-600">Bolded</strong> pandals are must-watch locations.</p>
                 <div class="mb-3">
-                            <div class="relative">
-                                <input type="search" id="search-input" placeholder="Search for a pandal..." class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-                                <svg class="absolute left-2 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </div>
-                            <button id="clear-all-btn" class="w-full mt-2 bg-red-500 text-white font-bold py-2 px-2 rounded-lg hover:bg-red-600 transition-colors shadow-md text-sm">Clear Selections</button>
+                                <div class="relative">
+                                    <input type="search" id="search-input" placeholder="Search for a pandal..." class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                                    <svg class="absolute left-2 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <button id="clear-all-btn" class="w-full mt-2 bg-red-500 text-white font-bold py-2 px-2 rounded-lg hover:bg-red-600 transition-colors shadow-md text-sm">Clear Selections</button>
                 </div>
             </div>
             
@@ -113,6 +116,9 @@
     </div>
 
     <div id="floating-buttons-container" class="md:hidden fixed bottom-4 right-4 z-40 flex flex-col items-center gap-3">
+        <button id="car-parking-btn" title="Save Car Location" class="bg-green-500 text-white rounded-full p-4 shadow-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all transform hover:scale-110">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1 .4-1 1v12c0 .6.4 1 1 1h2"/><path d="M5 18h14"/><circle cx="7.5" cy="18.5" r="2.5"/><circle cx="17.5" cy="18.5" r="2.5"/></svg>
+        </button>
         <button id="weather-forecast-btn" disabled class="bg-blue-500 text-white rounded-full p-4 shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-transform transform hover:scale-110 disabled:bg-gray-400 disabled:cursor-not-allowed">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
         </button>
@@ -192,7 +198,7 @@
             { name: "Dakshindari Youth Forum Ground", shortName: "Dakshindari", category: "Lake Town / Ultadanga" ,mustWatch: true },
 
             // Dum Dum
-            { name: "Dakshinpara Durgotsab Committee", shortName: "Dakshinpara DD", category: "Dum Dum" },
+            { name: "Dakshinpara Durgotsab Committee JC7C+9F5, Dakshinpara Rd, Satgachi, Baguiati, West Bengal 700028", shortName: "Dakshinpara DD", category: "Dum Dum" },
             { name: "Dum Dum Tarun Dal Club", shortName: "Tarun Dal", category: "Dum Dum", mustWatch: true },
             { name: "Dum Dum Park Sarbojanin Durga Puja Samity", shortName: "DD Park Sarbojanin", category: "Dum Dum" },
             { name: "Dum Dum Park Bharat Chakra", shortName: "DD Park Bharat", category: "Dum Dum", mustWatch: true },
@@ -280,6 +286,11 @@
         let sortedSelectedLocations = [];
         const visitedPandals = new Set();
         let isMapViewActive = false; 
+        let calendarInstance = null; // For Flatpickr
+        // NEW VARIABLES FOR PARKING
+        let carParkingLocation = null;
+        let carMarker = null;
+        const PARKING_STORAGE_KEY = 'pandalHopperParking';
 
         // --- INITIALIZATION & UI SETUP ---
         window.initMap = function() {
@@ -297,6 +308,8 @@
             getUserLocation();
             setupEventListeners();
             renderSavedPlans();
+            loadParkingLocation();
+            initializeCalendar();
         }
 
         function setupEventListeners() {
@@ -321,11 +334,32 @@
             document.getElementById('search-input').addEventListener('keyup', filterPandals);
             document.getElementById('clear-all-btn').addEventListener('click', clearAllSelections);
             document.getElementById('view-toggle-btn').addEventListener('click', toggleMobileView); 
-            document.getElementById('weather-forecast-btn').addEventListener('click', getWeatherForecast);
+            document.getElementById('weather-forecast-btn').addEventListener('click', () => {
+                if (calendarInstance) {
+                    calendarInstance.open();
+                }
+            });
+            document.getElementById('car-parking-btn').addEventListener('click', handleParking);
             
             makeDraggable(document.getElementById('floating-buttons-container'));
         }
         
+        // UPDATED: Simplified calendar initialization to ensure it's completely hidden
+        function initializeCalendar() {
+            // The calendar is attached to an already hidden input field.
+            // This ensures no visible calendar elements are created on page load.
+            calendarInstance = flatpickr("#date-picker", {
+                minDate: "2025-09-26",
+                maxDate: "2025-10-05", // Main Durga Puja 2025 period
+                dateFormat: "Y-m-d",
+                onChange: function(selectedDates, dateStr, instance) {
+                    if (dateStr) {
+                        getForecastForDate(dateStr);
+                    }
+                }
+            });
+        }
+
         function populateLocationList(sortedData = null) {
             const listContainer = document.getElementById('location-list');
             listContainer.innerHTML = ''; 
@@ -727,46 +761,54 @@
             }
         }
         
-        async function getWeatherForecast() {
+        async function getForecastForDate(selectedDate) {
             if (!userLocation) {
                 alert("Please enable your location to get a weather forecast.");
                 return;
             }
             
-            const prompt = `You are a helpful weather assistant. The user is in Kolkata, India. The current date is September 24, 2025. Based on the user's location at latitude ${userLocation.lat} and longitude ${userLocation.lng}, provide an hourly weather forecast for the next 12 hours.
+            const displayDate = new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
 
-Your response must be a single HTML \`<div>\` container. Inside this div, for each of the next 12 hours, create a child \`<div>\` with the following structure:
-- It must have the classes: 'flex items-center justify-between p-2 border-b'
-- Inside, include these elements in order:
-  1. A \`<span>\` with the time (e.g., "7:00 PM").
-  2. A \`<span>\` with an appropriate weather emoji (e.g., "☁️").
-  3. A \`<span>\` with a brief weather description (e.g., "Partly Cloudy").
-  4. A \`<span>\` containing a water drop emoji (💧) and the percentage chance of rain (e.g., "💧 15%"). This span should have the class 'text-blue-500 text-sm'.
-  5. A \`<strong>\` tag with the temperature in Celsius (e.g., "29°C").
+            const prompt = `You are a helpful weather assistant. The user is in Kolkata, India, at latitude ${userLocation.lat} and longitude ${userLocation.lng}.
+        Provide a 24-hour, hour-by-hour weather forecast for the selected date: ${selectedDate}.
 
-Do not include any introduction, conclusion, or any other text outside of the main \`<div>\` container.`;
+        Your response must be a single HTML \`<div>\` container. Inside this div, for each of the 24 hours of that day (from 00:00 to 23:00), create a child \`<div>\` with the following structure:
+        - It must have the classes: 'grid grid-cols-5 items-center gap-2 p-2 border-b text-center'
+        - Inside, include these elements in order:
+          1. A \`<span>\` with the time in 24-hour format (e.g., "00:00", "01:00", "14:00"). This should have the class 'font-semibold'.
+          2. A \`<span>\` with an appropriate weather emoji (e.g., "🌙", "☀️", "☁️", "🌧️").
+          3. A \`<span>\` with a brief weather description (e.g., "Clear", "Partly Cloudy"). This span should have the class 'text-left col-span-2'.
+          4. A \`<span>\` containing a water drop emoji (💧) and the percentage chance of rain (e.g., "💧 15%"). This span should have the class 'text-blue-500 text-sm'.
+          5. A \`<strong>\` tag with the temperature in Celsius (e.g., "29°C").
 
-            await callGeminiAPI("☁️ 12-Hour Forecast", prompt);
+        Do not include any introduction, conclusion, headers, or any other text outside of the main \`<div>\` container. Start directly with the hourly forecast.`;
+
+            await callGeminiAPI(`☁️ Forecast for ${displayDate}`, prompt);
         }
 
         async function getThemeDetails() {
             if (sortedSelectedLocations.length === 0) return;
             const prompt = `You are an expert guide for Kolkata's Durga Puja. A user wants to know the theme for the following pandals: ${sortedSelectedLocations.map(p => p.name).join(', ')}.
 
-For each pandal, use Google Search to find its official theme for Durga Puja 2025, which is happening now.
+        For each pandal, use Google Search to find its official theme for Durga Puja 2025, which is happening now.
 
-Your response must be in both English and Bengali.
+        Your response must be in both English and Bengali.
 
-**Output Format:**
-- Do not add any title, introduction, or conclusion.
-- The entire output must be a single HTML \`<ul>\` list.
-- Each pandal should be an \`<li>\` item.
-- Inside each \`<li>\`, use a \`<strong>\` tag for the pandal name.
-- Below the name, provide the theme like this:
-  - English Theme: [The theme in English]
-  - Bengali Theme: [The theme in Bengali]
-- If no theme information for 2025 is found for a pandal after searching, you must state "Theme for 2025 has not been announced yet." in English, and "२०২৫ সালের থিম এখনও ঘোষণা করা হয়নি।" in Bengali.
-- Do not include any information about previous years.`;
+        **Output Format:**
+        - Do not add any title, introduction, or conclusion.
+        - The entire output must be a single HTML \`<ul>\` list.
+        - Each pandal should be an \`<li>\` item.
+        - Inside each \`<li>\`, use a \`<strong>\` tag for the pandal name.
+        - Below the name, provide the theme like this:
+          - English Theme: [The theme in English]
+          - Bengali Theme: [The theme in Bengali]
+        - If no theme information for 2025 is found for a pandal after searching, you must state "Theme for 2025 has not been announced yet." in English, and "२०২৫ সালের থিম এখনও ঘোষণা করা হয়নি।" in Bengali.
+        - Do not include any information about previous years.`;
             
             await callGeminiAPI("🎨 Pandal Theme Details", prompt);
         }
@@ -778,46 +820,46 @@ Your response must be in both English and Bengali.
             const pandalListString = sortedSelectedLocations.map((p, i) => `${i + 1}. ${p.name}`).join('\n');
 
             const prompt = `
-You are an expert local travel planner for Kolkata's Durga Puja. A user wants a detailed itinerary to visit the following pandals in a specific, pre-sorted order. The user's journey starts from their current location. The current date is September 24, 2025, during the Durga Puja festival.
+        You are an expert local travel planner for Kolkata's Durga Puja. A user wants a detailed itinerary to visit the following pandals in a specific, pre-sorted order. The user's journey starts from their current location. The current date is September 24, 2025, during the Durga Puja festival.
 
-**User's Starting Location:** The user is starting their journey from the GPS coordinates: ${userLocation.lat}, ${userLocation.lng}.
+        **User's Starting Location:** The user is starting their journey from the GPS coordinates: ${userLocation.lat}, ${userLocation.lng}.
 
-**Pandals to Visit (in order):**
-${pandalListString}
+        **Pandals to Visit (in order):**
+        ${pandalListString}
 
-**Your Task:**
-Create a detailed, step-by-step itinerary. 
-1.  **Start Journey:** First, provide public transport directions from the user's current location to the first pandal (${sortedSelectedLocations[0].name}).
-2.  **Pandal Details:** For each pandal, provide nearby restaurant options.
-3.  **Inter-Pandal Travel:** For the travel segments between pandals, provide public transport directions and the estimated travel time.
-4.  **Total Time:** Finally, calculate an overall estimated time for the entire trip.
+        **Your Task:**
+        Create a detailed, step-by-step itinerary. 
+        1.  **Start Journey:** First, provide public transport directions from the user's current location to the first pandal (${sortedSelectedLocations[0].name}).
+        2.  **Pandal Details:** For each pandal, provide nearby restaurant options.
+        3.  **Inter-Pandal Travel:** For the travel segments between pandals, provide public transport directions and the estimated travel time.
+        4.  **Total Time:** Finally, calculate an overall estimated time for the entire trip.
 
-**Instructions for the Output:**
-1.  **Structure:** The entire output must be a single HTML structure.
-2.  **Initial Travel:** Start with a section with an \`<h4>\` tag: "<h4>Travel to First Pandal: ${sortedSelectedLocations[0].name}</h4>". Detail the public transport options (metro, bus, auto) and state the **Estimated Travel Time**.
-3.  **For each Pandal:**
-    * Create a section for the pandal. Use an \`<h4>\` tag with the pandal's name and its stop number (e.g., "<h4>1. Bagbazar Sarbojanin</h4>").
-    * Inside this section, create a sub-section for "Nearby Restaurants". List 2-3 highly-rated restaurant options in an unordered list (\`<ul>\`), mentioning the cuisine type for each.
-4.  **For each Travel Segment (between subsequent pandals):**
-    * Create a separate section for the travel instructions. Use an \`<h4>\` tag like "<h4>Travel to next pandal:</h4>".
-    * Inside this, detail the public transport options (mentioning metro lines/stations, bus numbers, or auto routes).
-    * Clearly state the **Estimated Travel Time** for that segment (e.g., "25-35 minutes").
-5.  **Total Time:** At the very end, provide a "Total Estimated Trip Time". Assume each pandal visit takes approximately 45 minutes and add all the travel times (including the initial journey) to this. Present this in a highlighted box.
-6.  **Language:** Keep the output in simple, clear English.
+        **Instructions for the Output:**
+        1.  **Structure:** The entire output must be a single HTML structure.
+        2.  **Initial Travel:** Start with a section with an \`<h4>\` tag: "<h4>Travel to First Pandal: ${sortedSelectedLocations[0].name}</h4>". Detail the public transport options (metro, bus, auto) and state the **Estimated Travel Time**.
+        3.  **For each Pandal:**
+            * Create a section for the pandal. Use an \`<h4>\` tag with the pandal's name and its stop number (e.g., "<h4>1. Bagbazar Sarbojanin</h4>").
+            * Inside this section, create a sub-section for "Nearby Restaurants". List 2-3 highly-rated restaurant options in an unordered list (\`<ul>\`), mentioning the cuisine type for each.
+        4.  **For each Travel Segment (between subsequent pandals):**
+            * Create a separate section for the travel instructions. Use an \`<h4>\` tag like "<h4>Travel to next pandal:</h4>".
+            * Inside this, detail the public transport options (mentioning metro lines/stations, bus numbers, or auto routes).
+            * Clearly state the **Estimated Travel Time** for that segment (e.g., "25-35 minutes").
+        5.  **Total Time:** At the very end, provide a "Total Estimated Trip Time". Assume each pandal visit takes approximately 45 minutes and add all the travel times (including the initial journey) to this. Present this in a highlighted box.
+        6.  **Language:** Keep the output in simple, clear English.
 
-**Example HTML structure:**
-<div class="mb-4 border-b pb-4">
-    <h4 class="text-lg font-bold">Travel to First Pandal: Pandal Name One</h4>
-    <div class="pl-4">
-        <p class="mt-2 text-sm">**Route:** [Directions from user's current location...]</p>
-        <p class="text-sm"><strong>Estimated Travel Time:</strong> [Time estimate]</p>
-    </div>
-</div>
-... and so on ...
-<div class="mt-6 p-3 bg-blue-100 text-blue-800 rounded-lg">
-    <p class="font-bold">Total Estimated Trip Time: [Your calculation here]</p>
-</div>
-`;
+        **Example HTML structure:**
+        <div class="mb-4 border-b pb-4">
+            <h4 class="text-lg font-bold">Travel to First Pandal: Pandal Name One</h4>
+            <div class="pl-4">
+                <p class="mt-2 text-sm">**Route:** [Directions from user's current location...]</p>
+                <p class="text-sm"><strong>Estimated Travel Time:</strong> [Time estimate]</p>
+            </div>
+        </div>
+        ... and so on ...
+        <div class="mt-6 p-3 bg-blue-100 text-blue-800 rounded-lg">
+            <p class="font-bold">Total Estimated Trip Time: [Your calculation here]</p>
+        </div>
+        `;
             
             await callGeminiAPI("✨ Your Pandal Hopping Plan", prompt);
         }
@@ -840,7 +882,8 @@ Create a detailed, step-by-step itinerary.
             }
 
             
-const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
+        
+	const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
             const payload = {
                 contents: [{ parts: [{ text: prompt }] }],
                 tools: [{ "google_search": {} }]
@@ -1192,6 +1235,91 @@ const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2
             }
         }
 
+        // --- NEW PARKING FEATURE FUNCTIONS ---
+        function handleParking() {
+            if (carParkingLocation) {
+                // Car is already parked, so offer options
+                if (confirm("You have a parked car. Get directions to it? \n\n(Press 'Cancel' to remove the parking pin instead.)")) {
+                    if (!userLocation) {
+                        alert("Cannot get your current location to provide directions.");
+                        return;
+                    }
+                    // Open Google Maps for directions
+                    const directionsUrl = `https://www.google.com/maps?saddr=${userLocation.lat},${userLocation.lng}&daddr=${carParkingLocation.lat},${carParkingLocation.lng}&travelmode=walking`;
+                    window.open(directionsUrl, '_blank');
+                } else {
+                    // User chose to remove the pin
+                    clearParkingLocation();
+                }
+            } else {
+                // No car is parked, so save the current location
+                if (!userLocation) {
+                    alert("Please enable your location to save your parking spot.");
+                    return;
+                }
+                carParkingLocation = { lat: userLocation.lat, lng: userLocation.lng };
+                localStorage.setItem(PARKING_STORAGE_KEY, JSON.stringify(carParkingLocation));
+                alert("Parking location saved!");
+                updateParkingUI();
+            }
+        }
+
+        function clearParkingLocation() {
+            if (confirm("Are you sure you want to remove your saved parking location?")) {
+                carParkingLocation = null;
+                localStorage.removeItem(PARKING_STORAGE_KEY);
+                alert("Parking location cleared!");
+                updateParkingUI();
+            }
+        }
+
+        function updateParkingUI() {
+            const parkBtn = document.getElementById('car-parking-btn');
+            const carIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1 .4-1 1v12c0 .6.4 1 1 1h2"/><path d="M5 18h14"/><circle cx="7.5" cy="18.5" r="2.5"/><circle cx="17.5" cy="18.5" r="2.5"/></svg>`;
+            const findCarIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m12 8-4 4 4 4"/><path d="M16 12H9"/></svg>`;
+
+            // Remove previous car marker from map
+            if (carMarker) {
+                carMarker.setMap(null);
+                carMarker = null;
+            }
+
+            if (carParkingLocation) {
+                // Update UI to "Find Car" state
+                parkBtn.classList.replace('bg-green-500', 'bg-red-500');
+                parkBtn.classList.replace('hover:bg-green-600', 'hover:bg-red-600');
+                parkBtn.innerHTML = findCarIcon;
+                parkBtn.title = "Get directions to car / Clear location";
+
+                // Add a new marker to the map
+                carMarker = new google.maps.Marker({
+                    position: carParkingLocation,
+                    map: map,
+                    title: 'My Car',
+                    icon: {
+                        url: 'https://maps.google.com/mapfiles/kml/shapes/cabs.png',
+                        scaledSize: new google.maps.Size(40, 40)
+                    },
+                    animation: google.maps.Animation.DROP
+                });
+
+            } else {
+                // Update UI to "Park Car" state
+                parkBtn.classList.replace('bg-red-500', 'bg-green-500');
+                parkBtn.classList.replace('hover:bg-red-600', 'hover:bg-green-600');
+                parkBtn.innerHTML = carIcon;
+                parkBtn.title = "Save Car Location";
+            }
+        }
+
+        function loadParkingLocation() {
+            const savedLocation = localStorage.getItem(PARKING_STORAGE_KEY);
+            if (savedLocation) {
+                carParkingLocation = JSON.parse(savedLocation);
+            }
+            updateParkingUI();
+        }
+
         // --- DRAGGABLE FUNCTIONALITY (CORRECTED) ---
         function makeDraggable(element) {
             let isDown = false;
@@ -1297,6 +1425,7 @@ const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2
         }
 
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBfulQNrZqVY4kj1CCsWoS13SksshKPZM&callback=initMap&libraries=geocoding">
     </script>
