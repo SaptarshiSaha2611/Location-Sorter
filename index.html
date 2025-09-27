@@ -63,15 +63,15 @@
                 </div>
                 
                 <div class="grid grid-cols-3 gap-2 mt-4">
-                            <button id="theme-details-btn" disabled class="w-full bg-blue-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-blue-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
-                                🎨 Theme
-                            </button>
-                            <button id="plan-generator-btn" disabled class="w-full bg-purple-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-purple-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
-                                ✨ Plan
-                            </button>
-                            <button id="save-plan-btn" disabled class="w-full bg-green-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-green-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
-                                💾 Save
-                            </button>
+                                <button id="theme-details-btn" disabled class="w-full bg-blue-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-blue-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
+                                    🎨 Theme
+                                </button>
+                                <button id="plan-generator-btn" disabled class="w-full bg-purple-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-purple-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
+                                    ✨ Plan
+                                </button>
+                                <button id="save-plan-btn" disabled class="w-full bg-green-600 text-white font-bold py-2 px-2 rounded-lg hover:bg-green-700 transition-colors shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center text-sm">
+                                    💾 Save
+                                </button>
                 </div>
                 <p id="plan-helper-text" class="text-xs text-center text-gray-500 mt-1">(Select 1 to 6 pandals for a plan)</p>
 
@@ -93,13 +93,13 @@
                 <h2 class="text-lg font-semibold my-3 border-t pt-3">Select Pandals:</h2>
                 <p class="text-xs text-gray-500 italic mb-2">* <strong class="text-indigo-600">Bolded</strong> pandals are must-watch locations.</p>
                 <div class="mb-3">
-                                <div class="relative">
-                                    <input type="search" id="search-input" placeholder="Search for a pandal..." class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-                                    <svg class="absolute left-2 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
-                                </div>
-                                <button id="clear-all-btn" class="w-full mt-2 bg-red-500 text-white font-bold py-2 px-2 rounded-lg hover:bg-red-600 transition-colors shadow-md text-sm">Clear Selections</button>
+                                    <div class="relative">
+                                        <input type="search" id="search-input" placeholder="Search for a pandal..." class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                                        <svg class="absolute left-2 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        </svg>
+                                    </div>
+                                    <button id="clear-all-btn" class="w-full mt-2 bg-red-500 text-white font-bold py-2 px-2 rounded-lg hover:bg-red-600 transition-colors shadow-md text-sm">Clear Selections</button>
                 </div>
             </div>
             
@@ -223,10 +223,10 @@
             { name: "Hindusthan Park Sarbojanin Durgotsab Committee", shortName: "Hindusthan Pk", category: "South Kolkata" ,mustWatch: true },
             { name: "Singhi Park Sarbojanin Durga Puja Committee", shortName: "Singhi Park", category: "South Kolkata" },
             { name: "Ekdalia Evergreen Club", shortName: "Ekdalia", category: "South Kolkata" },
-			{ name: "Badamtala Ashar Sangha Durgotsab", shortName: "Badamtala", category: "South Kolkata" },
-			{ name: "Bakul Bagan Sarbojanin Durgotsav", shortName: "Bakul Bagan", category: "South Kolkata" },
-			{ name: "Tricone Park", shortName: "Tricone Park", category: "South Kolkata" },
-			{ name: "Netaji Jatiya Sebadal", shortName: "Netaji Sebadal", category: "South Kolkata" },
+   { name: "Badamtala Ashar Sangha Durgotsab", shortName: "Badamtala", category: "South Kolkata" },
+   { name: "Bakul Bagan Sarbojanin Durgotsav", shortName: "Bakul Bagan", category: "South Kolkata" },
+   { name: "Tricone Park", shortName: "Tricone Park", category: "South Kolkata" },
+   { name: "Netaji Jatiya Sebadal", shortName: "Netaji Sebadal", category: "South Kolkata" },
 
             
             // Jadavpur
@@ -443,6 +443,34 @@
                         leftDiv.appendChild(checkbox);
                         leftDiv.appendChild(label);
                         itemDiv.appendChild(leftDiv);
+
+                        // --- MODIFICATION START ---
+                        // Container for action buttons on the right side
+                        const rightDiv = document.createElement('div');
+                        rightDiv.className = 'flex items-center space-x-2 pl-2';
+
+                        // Create and add the Navigate icon button if coordinates are available
+                        if (location.lat && location.lng) {
+                            const navigateBtn = document.createElement('button');
+                            // Replace text with a navigation SVG icon
+                            navigateBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>`;
+                            navigateBtn.title = `Maps to ${location.name}`;
+                            // Adjust styling for a compact, circular icon button
+                            navigateBtn.className = 'navigate-btn bg-indigo-500 text-white p-1.5 rounded-full hover:bg-indigo-600 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500';
+
+                            navigateBtn.onclick = (e) => {
+                                // Prevent checkbox from toggling when button is clicked
+                                e.stopPropagation(); 
+                                // Use a valid Google Maps URL for directions
+                                const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${location.lat},${location.lng}`;
+                                window.open(mapsUrl, '_blank');
+                            };
+                            rightDiv.appendChild(navigateBtn);
+                        }
+
+                        itemDiv.appendChild(rightDiv);
+                        // --- MODIFICATION END ---
+                        
                         pandalContainer.appendChild(itemDiv);
                     });
 
@@ -594,6 +622,11 @@
             const helperText = document.getElementById('plan-helper-text');
             const statusText = document.getElementById('status-text');
 
+            // --- MODIFICATION START ---
+            // Clear all existing "Done" buttons before re-evaluating
+            document.querySelectorAll('#location-list .done-btn').forEach(btn => btn.remove());
+            // --- MODIFICATION END ---
+
             document.querySelectorAll('#location-list label').forEach(label => {
                 const forAttr = label.htmlFor;
                 const index = parseInt(forAttr.replace('loc-', ''), 10);
@@ -609,11 +642,6 @@
                             labelHTML += ` <span class="text-xs text-gray-500 font-medium">(${location.distance.toFixed(1)} km)</span>`;
                         }
                         label.innerHTML = labelHTML;
-                }
-                const itemDiv = label.parentElement.parentElement;
-                const existingDoneBtn = itemDiv.querySelector('.done-btn');
-                if (existingDoneBtn) {
-                    itemDiv.removeChild(existingDoneBtn);
                 }
             });
 
@@ -673,7 +701,7 @@
 
                 const doneBtn = document.createElement('button');
                 doneBtn.textContent = 'Done';
-                doneBtn.className = 'done-btn text-xs bg-gray-200 px-2 py-1 rounded hover:bg-gray-300';
+                doneBtn.className = 'done-btn text-xs bg-gray-200 px-2 py-1 rounded-md hover:bg-gray-300';
                 
                 if (visitedPandals.has(location.originalIndex.toString())) {
                     label.classList.add('line-through', 'text-gray-400');
@@ -696,9 +724,13 @@
                     displaySortedLocationsOnMap(sortedSelectedLocations);
                 };
 
-                if (!itemDiv.querySelector('.done-btn')) {
-                    itemDiv.appendChild(doneBtn);
+                // --- MODIFICATION START ---
+                const rightDiv = itemDiv.querySelector('.flex.items-center.space-x-2');
+                if (rightDiv && !rightDiv.querySelector('.done-btn')) {
+                    // Prepend so it appears before the Navigate button
+                    rightDiv.prepend(doneBtn); 
                 }
+                // --- MODIFICATION END ---
             });
 
             displaySortedLocationsOnMap(sortedSelectedLocations);
@@ -888,7 +920,9 @@
 
             
         
-	const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
+ 
+const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
+
             const payload = {
                 contents: [{ parts: [{ text: prompt }] }],
                 tools: [{ "google_search": {} }]
@@ -1137,6 +1171,7 @@
                 navContainer.classList.add('hidden');
                 return;
             }
+            // --- MODIFICATION: Use correct Google Maps URL format ---
             let mapsUrl = `https://www.google.com/maps/dir/?api=1`;
             mapsUrl += `&origin=${userLocation.lat},${userLocation.lng}`;
             const destination = sortedLocations[sortedLocations.length - 1];
@@ -1250,7 +1285,8 @@
                         return;
                     }
                     // Open Google Maps for directions
-                    const directionsUrl = `https://www.google.com/maps?saddr=${userLocation.lat},${userLocation.lng}&daddr=${carParkingLocation.lat},${carParkingLocation.lng}&travelmode=walking`;
+                    // --- MODIFICATION: Use correct Google Maps URL format ---
+                    const directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${carParkingLocation.lat},${carParkingLocation.lng}&travelmode=walking`;
                     window.open(directionsUrl, '_blank');
                 } else {
                     // User chose to remove the pin
@@ -1302,7 +1338,8 @@
                     map: map,
                     title: 'My Car',
                     icon: {
-                        url: 'https://maps.google.com/mapfiles/kml/shapes/cabs.png',
+                        // Using a simple "P" for parking icon URL
+                        url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
                         scaledSize: new google.maps.Size(40, 40)
                     },
                     animation: google.maps.Animation.DROP
