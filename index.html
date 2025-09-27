@@ -168,6 +168,19 @@
 
 
     <script>
+        // --- SECURITY WARNING ---
+        // Your API keys are exposed in this client-side code.
+        // This is a major security risk. Anyone can view your page source,
+        // copy your keys, and use them, potentially costing you money.
+        //
+        // 1. For Google Maps: Restrict your key to your specific website URL
+        //    (HTTP referrer) in the Google Cloud Console.
+        // 2. For Gemini: Create a backend server to act as a proxy. Your website
+        //    should call your server, which then securely calls the Gemini API.
+        //
+        // Replace 'YOUR_API_KEY' with your actual keys for development, but
+        // DO NOT deploy to production with keys exposed like this.
+
         // --- DATA ---
         const locations = [
             // North Kolkata
@@ -190,7 +203,6 @@
             { name: "Chorebagan Sarbojanin", shortName: "Chorebagan", category: "North Kolkata", mustWatch: true },
             { name: "Beniatola Sarbojonin Durgotsab", shortName: "Beniatola", category: "North Kolkata" },
             { name: "Gauri Bari Sarbojanin Durga Puja Pandal", shortName: "Gauri Bari", category: "North Kolkata" },
-            { name: "Nalin Sarkar Street Durga Puja", shortName: "Nalin Sarkar Street", category: "North Kolkata" },
 
             // Lake Town / Ultadanga
             { name: "Telengabagan durgotsab", shortName: "Telengabagan", category: "Lake Town / Ultadanga" },
@@ -206,7 +218,7 @@
             { name: "Aswininagar Bandhumahal Club, Baguiati", shortName: "Aswininagar", category: "Dum Dum" },
             { name: "Arjunpur Amra Sabai Club", shortName: "Arjunpur", category: "Dum Dum", mustWatch: true },
             { name: "Dum Dum Park Tarun Sangha JC67+9G South Dumdum, West Bengal",shortName: "Tarun Sangha",category: "Dum Dum", "mustWatch": true },
-            { name: "Kestopur Prafulla Kanan Poschim Adhibasibrinda", shortName: "Kestopur Adhibasibrinda", category: "Dum Dum" },
+
             // South Kolkata
             { name: "Suruchi Sangha", shortName: "Suruchi Sangha", category: "South Kolkata" ,mustWatch: true },
             { name: "Chetla Agrani Club", shortName: "Chetla Agrani", category: "South Kolkata" ,mustWatch: true },
@@ -262,7 +274,6 @@
             { name: "Wellington Nagarik Kalyan Samity", shortName: "Wellington", category: "Central Kolkata" },
             { name: "Kankurgachi Jubak Brinda", shortName: "Kankurgachi", category: "Central Kolkata" },
             { name: "Beliaghata 33 Pally", shortName: "Beliaghata 33", category: "Central Kolkata", mustWatch: true },
-            { name: "Mitali Sangha Durga Puja Pandal", shortName: "Mitali Sangha", category: "Central Kolkata" },
             
             // West Kolkata & Behala
             { name: "Barisha Club Puja Ground and Community Hall", shortName: "Barisha Club", category: "West Kolkata & Behala",mustWatch: true },
@@ -289,7 +300,7 @@
         let directionsService;
         let directionsRenderer;
         let geocoder;
-        const GEMINI_API_KEY = 'AIzaSyCR9eO8hbW1x8RCpejMCEh1e_dfBCteaYM';
+        const GEMINI_API_KEY = 'AIzaSyCR9eO8hbW1x8RCpejMCEh1e_dfBCteaYM'; // <-- WARNING: EXPOSED KEY
         let sortedSelectedLocations = [];
         const visitedPandals = new Set();
         let isMapViewActive = false; 
@@ -446,24 +457,20 @@
                         leftDiv.appendChild(label);
                         itemDiv.appendChild(leftDiv);
 
-                        // --- MODIFICATION START ---
-                        // Container for action buttons on the right side
+                        // --- Container for action buttons on the right side ---
                         const rightDiv = document.createElement('div');
                         rightDiv.className = 'flex items-center space-x-2 pl-2';
 
-                        // Create and add the Navigate icon button if coordinates are available
+                        // --- Create and add the Navigate icon button if coordinates are available ---
                         if (location.lat && location.lng) {
                             const navigateBtn = document.createElement('button');
-                            // Replace text with a navigation SVG icon
                             navigateBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>`;
                             navigateBtn.title = `Maps to ${location.name}`;
-                            // Adjust styling for a compact, circular icon button
                             navigateBtn.className = 'navigate-btn bg-indigo-500 text-white p-1.5 rounded-full hover:bg-indigo-600 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500';
 
                             navigateBtn.onclick = (e) => {
-                                // Prevent checkbox from toggling when button is clicked
                                 e.stopPropagation(); 
-                                // Use a valid Google Maps URL for directions
+                                // ✅ CORRECTED: Use a valid Google Maps URL for directions
                                 const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${location.lat},${location.lng}`;
                                 window.open(mapsUrl, '_blank');
                             };
@@ -471,7 +478,6 @@
                         }
 
                         itemDiv.appendChild(rightDiv);
-                        // --- MODIFICATION END ---
                         
                         pandalContainer.appendChild(itemDiv);
                     });
@@ -624,10 +630,8 @@
             const helperText = document.getElementById('plan-helper-text');
             const statusText = document.getElementById('status-text');
 
-            // --- MODIFICATION START ---
             // Clear all existing "Done" buttons before re-evaluating
             document.querySelectorAll('#location-list .done-btn').forEach(btn => btn.remove());
-            // --- MODIFICATION END ---
 
             document.querySelectorAll('#location-list label').forEach(label => {
                 const forAttr = label.htmlFor;
@@ -726,13 +730,11 @@
                     displaySortedLocationsOnMap(sortedSelectedLocations);
                 };
 
-                // --- MODIFICATION START ---
                 const rightDiv = itemDiv.querySelector('.flex.items-center.space-x-2');
                 if (rightDiv && !rightDiv.querySelector('.done-btn')) {
                     // Prepend so it appears before the Navigate button
                     rightDiv.prepend(doneBtn); 
                 }
-                // --- MODIFICATION END ---
             });
 
             displaySortedLocationsOnMap(sortedSelectedLocations);
@@ -814,18 +816,18 @@
             });
 
             const prompt = `You are a helpful weather assistant. The user is in Kolkata, India, at latitude ${userLocation.lat} and longitude ${userLocation.lng}.
-        Provide a 24-hour, hour-by-hour weather forecast for the selected date: ${selectedDate}.
+            Provide a 24-hour, hour-by-hour weather forecast for the selected date: ${selectedDate}.
 
-        Your response must be a single HTML \`<div>\` container. Inside this div, for each of the 24 hours of that day (from 00:00 to 23:00), create a child \`<div>\` with the following structure:
-        - It must have the classes: 'grid grid-cols-5 items-center gap-2 p-2 border-b text-center'
-        - Inside, include these elements in order:
-          1. A \`<span>\` with the time in 24-hour format (e.g., "00:00", "01:00", "14:00"). This should have the class 'font-semibold'.
-          2. A \`<span>\` with an appropriate weather emoji (e.g., "🌙", "☀️", "☁️", "🌧️").
-          3. A \`<span>\` with a brief weather description (e.g., "Clear", "Partly Cloudy"). This span should have the class 'text-left col-span-2'.
-          4. A \`<span>\` containing a water drop emoji (💧) and the percentage chance of rain (e.g., "💧 15%"). This span should have the class 'text-blue-500 text-sm'.
-          5. A \`<strong>\` tag with the temperature in Celsius (e.g., "29°C").
+            Your response must be a single HTML \`<div>\` container. Inside this div, for each of the 24 hours of that day (from 00:00 to 23:00), create a child \`<div>\` with the following structure:
+            - It must have the classes: 'grid grid-cols-5 items-center gap-2 p-2 border-b text-center'
+            - Inside, include these elements in order:
+              1. A \`<span>\` with the time in 24-hour format (e.g., "00:00", "01:00", "14:00"). This should have the class 'font-semibold'.
+              2. A \`<span>\` with an appropriate weather emoji (e.g., "🌙", "☀️", "☁️", "🌧️").
+              3. A \`<span>\` with a brief weather description (e.g., "Clear", "Partly Cloudy"). This span should have the class 'text-left col-span-2'.
+              4. A \`<span>\` containing a water drop emoji (💧) and the percentage chance of rain (e.g., "💧 15%"). This span should have the class 'text-blue-500 text-sm'.
+              5. A \`<strong>\` tag with the temperature in Celsius (e.g., "29°C").
 
-        Do not include any introduction, conclusion, headers, or any other text outside of the main \`<div>\` container. Start directly with the hourly forecast.`;
+            Do not include any introduction, conclusion, headers, or any other text outside of the main \`<div>\` container. Start directly with the hourly forecast.`;
 
             await callGeminiAPI(`☁️ Forecast for ${displayDate}`, prompt);
         }
@@ -834,20 +836,20 @@
             if (sortedSelectedLocations.length === 0) return;
             const prompt = `You are an expert guide for Kolkata's Durga Puja. A user wants to know the theme for the following pandals: ${sortedSelectedLocations.map(p => p.name).join(', ')}.
 
-        For each pandal, use Google Search to find its official theme for Durga Puja 2025, which is happening now.
+            For each pandal, use Google Search to find its official theme for Durga Puja 2025, which is happening now.
 
-        Your response must be in both English and Bengali.
+            Your response must be in both English and Bengali.
 
-        **Output Format:**
-        - Do not add any title, introduction, or conclusion.
-        - The entire output must be a single HTML \`<ul>\` list.
-        - Each pandal should be an \`<li>\` item.
-        - Inside each \`<li>\`, use a \`<strong>\` tag for the pandal name.
-        - Below the name, provide the theme like this:
-          - English Theme: [The theme in English]
-          - Bengali Theme: [The theme in Bengali]
-        - If no theme information for 2025 is found for a pandal after searching, you must state "Theme for 2025 has not been announced yet." in English, and "२०২৫ সালের থিম এখনও ঘোষণা করা হয়নি।" in Bengali.
-        - Do not include any information about previous years.`;
+            **Output Format:**
+            - Do not add any title, introduction, or conclusion.
+            - The entire output must be a single HTML \`<ul>\` list.
+            - Each pandal should be an \`<li>\` item.
+            - Inside each \`<li>\`, use a \`<strong>\` tag for the pandal name.
+            - Below the name, provide the theme like this:
+              - English Theme: [The theme in English]
+              - Bengali Theme: [The theme in Bengali]
+            - If no theme information for 2025 is found for a pandal after searching, you must state "Theme for 2025 has not been announced yet." in English, and "२०২৫ সালের থিম এখনও ঘোষণা করা হয়নি।" in Bengali.
+            - Do not include any information about previous years.`;
             
             await callGeminiAPI("🎨 Pandal Theme Details", prompt);
         }
@@ -859,46 +861,46 @@
             const pandalListString = sortedSelectedLocations.map((p, i) => `${i + 1}. ${p.name}`).join('\n');
 
             const prompt = `
-        You are an expert local travel planner for Kolkata's Durga Puja. A user wants a detailed itinerary to visit the following pandals in a specific, pre-sorted order. The user's journey starts from their current location. The current date is September 24, 2025, during the Durga Puja festival.
+            You are an expert local travel planner for Kolkata's Durga Puja. A user wants a detailed itinerary to visit the following pandals in a specific, pre-sorted order. The user's journey starts from their current location. The current date is September 24, 2025, during the Durga Puja festival.
 
-        **User's Starting Location:** The user is starting their journey from the GPS coordinates: ${userLocation.lat}, ${userLocation.lng}.
+            **User's Starting Location:** The user is starting their journey from the GPS coordinates: ${userLocation.lat}, ${userLocation.lng}.
 
-        **Pandals to Visit (in order):**
-        ${pandalListString}
+            **Pandals to Visit (in order):**
+            ${pandalListString}
 
-        **Your Task:**
-        Create a detailed, step-by-step itinerary. 
-        1.  **Start Journey:** First, provide public transport directions from the user's current location to the first pandal (${sortedSelectedLocations[0].name}).
-        2.  **Pandal Details:** For each pandal, provide nearby restaurant options.
-        3.  **Inter-Pandal Travel:** For the travel segments between pandals, provide public transport directions and the estimated travel time.
-        4.  **Total Time:** Finally, calculate an overall estimated time for the entire trip.
+            **Your Task:**
+            Create a detailed, step-by-step itinerary. 
+            1.  **Start Journey:** First, provide public transport directions from the user's current location to the first pandal (${sortedSelectedLocations[0].name}).
+            2.  **Pandal Details:** For each pandal, provide nearby restaurant options.
+            3.  **Inter-Pandal Travel:** For the travel segments between pandals, provide public transport directions and the estimated travel time.
+            4.  **Total Time:** Finally, calculate an overall estimated time for the entire trip.
 
-        **Instructions for the Output:**
-        1.  **Structure:** The entire output must be a single HTML structure.
-        2.  **Initial Travel:** Start with a section with an \`<h4>\` tag: "<h4>Travel to First Pandal: ${sortedSelectedLocations[0].name}</h4>". Detail the public transport options (metro, bus, auto) and state the **Estimated Travel Time**.
-        3.  **For each Pandal:**
-            * Create a section for the pandal. Use an \`<h4>\` tag with the pandal's name and its stop number (e.g., "<h4>1. Bagbazar Sarbojanin</h4>").
-            * Inside this section, create a sub-section for "Nearby Restaurants". List 2-3 highly-rated restaurant options in an unordered list (\`<ul>\`), mentioning the cuisine type for each.
-        4.  **For each Travel Segment (between subsequent pandals):**
-            * Create a separate section for the travel instructions. Use an \`<h4>\` tag like "<h4>Travel to next pandal:</h4>".
-            * Inside this, detail the public transport options (mentioning metro lines/stations, bus numbers, or auto routes).
-            * Clearly state the **Estimated Travel Time** for that segment (e.g., "25-35 minutes").
-        5.  **Total Time:** At the very end, provide a "Total Estimated Trip Time". Assume each pandal visit takes approximately 45 minutes and add all the travel times (including the initial journey) to this. Present this in a highlighted box.
-        6.  **Language:** Keep the output in simple, clear English.
+            **Instructions for the Output:**
+            1.  **Structure:** The entire output must be a single HTML structure.
+            2.  **Initial Travel:** Start with a section with an \`<h4>\` tag: "<h4>Travel to First Pandal: ${sortedSelectedLocations[0].name}</h4>". Detail the public transport options (metro, bus, auto) and state the **Estimated Travel Time**.
+            3.  **For each Pandal:**
+                * Create a section for the pandal. Use an \`<h4>\` tag with the pandal's name and its stop number (e.g., "<h4>1. Bagbazar Sarbojanin</h4>").
+                * Inside this section, create a sub-section for "Nearby Restaurants". List 2-3 highly-rated restaurant options in an unordered list (\`<ul>\`), mentioning the cuisine type for each.
+            4.  **For each Travel Segment (between subsequent pandals):**
+                * Create a separate section for the travel instructions. Use an \`<h4>\` tag like "<h4>Travel to next pandal:</h4>".
+                * Inside this, detail the public transport options (mentioning metro lines/stations, bus numbers, or auto routes).
+                * Clearly state the **Estimated Travel Time** for that segment (e.g., "25-35 minutes").
+            5.  **Total Time:** At the very end, provide a "Total Estimated Trip Time". Assume each pandal visit takes approximately 45 minutes and add all the travel times (including the initial journey) to this. Present this in a highlighted box.
+            6.  **Language:** Keep the output in simple, clear English.
 
-        **Example HTML structure:**
-        <div class="mb-4 border-b pb-4">
-            <h4 class="text-lg font-bold">Travel to First Pandal: Pandal Name One</h4>
-            <div class="pl-4">
-                <p class="mt-2 text-sm">**Route:** [Directions from user's current location...]</p>
-                <p class="text-sm"><strong>Estimated Travel Time:</strong> [Time estimate]</p>
+            **Example HTML structure:**
+            <div class="mb-4 border-b pb-4">
+                <h4 class="text-lg font-bold">Travel to First Pandal: Pandal Name One</h4>
+                <div class="pl-4">
+                    <p class="mt-2 text-sm">**Route:** [Directions from user's current location...]</p>
+                    <p class="text-sm"><strong>Estimated Travel Time:</strong> [Time estimate]</p>
+                </div>
             </div>
-        </div>
-        ... and so on ...
-        <div class="mt-6 p-3 bg-blue-100 text-blue-800 rounded-lg">
-            <p class="font-bold">Total Estimated Trip Time: [Your calculation here]</p>
-        </div>
-        `;
+            ... and so on ...
+            <div class="mt-6 p-3 bg-blue-100 text-blue-800 rounded-lg">
+                <p class="font-bold">Total Estimated Trip Time: [Your calculation here]</p>
+            </div>
+            `;
             
             await callGeminiAPI("✨ Your Pandal Hopping Plan", prompt);
         }
@@ -922,8 +924,7 @@
 
             
         
- 
-const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
 
             const payload = {
                 contents: [{ parts: [{ text: prompt }] }],
@@ -1173,7 +1174,7 @@ const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2
                 navContainer.classList.add('hidden');
                 return;
             }
-            // --- MODIFICATION: Use correct Google Maps URL format ---
+            // ✅ CORRECTED: Use correct Google Maps URL format
             let mapsUrl = `https://www.google.com/maps/dir/?api=1`;
             mapsUrl += `&origin=${userLocation.lat},${userLocation.lng}`;
             const destination = sortedLocations[sortedLocations.length - 1];
@@ -1182,6 +1183,7 @@ const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2
                 const waypoints = sortedLocations.slice(0, -1).map(loc => `${loc.lat},${loc.lng}`).join('|');
                 mapsUrl += `&waypoints=${waypoints}`;
             }
+            mapsUrl += `&travelmode=driving`;
             navButton.onclick = () => window.open(mapsUrl, '_blank');
             navContainer.classList.remove('hidden');
         }
@@ -1286,8 +1288,7 @@ const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2
                         alert("Cannot get your current location to provide directions.");
                         return;
                     }
-                    // Open Google Maps for directions
-                    // --- MODIFICATION: Use correct Google Maps URL format ---
+                    // ✅ CORRECTED: Use correct Google Maps URL format
                     const directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${carParkingLocation.lat},${carParkingLocation.lng}&travelmode=walking`;
                     window.open(directionsUrl, '_blank');
                 } else {
@@ -1340,8 +1341,8 @@ const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2
                     map: map,
                     title: 'My Car',
                     icon: {
-                        // Using a simple "P" for parking icon URL
-                        url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+                        // Using a simple "P" for parking icon
+                        url: 'https://maps.google.com/mapfiles/kml/paddle/P.png',
                         scaledSize: new google.maps.Size(40, 40)
                     },
                     animation: google.maps.Animation.DROP
@@ -1472,6 +1473,6 @@ const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBfulQNrZqVY4kj1CCsWoS13SksshKPZM&callback=initMap&libraries=geocoding">
-    </script>
+        </script>
 </body>
 </html>
